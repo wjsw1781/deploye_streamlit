@@ -1,0 +1,114 @@
+2024-03-13T22:53:57.352880+0800 SUCCESS 1  -----> 30页获取陈工
+2024-03-13T22:54:02.365434+0800 ERROR 2  -----> 页获取失败 进行跳过
+2024-03-13T22:54:12.561217+0800 SUCCESS 3  -----> 0页获取陈工
+2024-03-13T22:54:17.574810+0800 ERROR 4  -----> 页获取失败 进行跳过
+2024-03-13T22:54:27.783428+0800 SUCCESS 5  -----> 0页获取陈工
+2024-03-13T22:54:32.790283+0800 ERROR 6  -----> 页获取失败 进行跳过
+2024-03-13T22:54:43.000209+0800 SUCCESS 7  -----> 0页获取陈工
+2024-03-13T22:54:48.008613+0800 ERROR 8  -----> 页获取失败 进行跳过
+2024-03-13T22:54:58.198233+0800 SUCCESS 9  -----> 0页获取陈工
+2024-03-13T22:55:03.209593+0800 ERROR 10  -----> 页获取失败 进行跳过
+2024-03-13T22:56:14.836235+0800 SUCCESS 获取视频成功    ---->   {'comment': 77, 'typeid': 21, 'play': 14398, 'pic': 'http://i2.hdslb.com/bfs/archive/5bd31aaa9989b0a62c9f67b96b012f2a05a6bae0.jpg', 'subtitle': '', 'description': '普通人的一生3', 'copyright': '1', 'title': '大型纪录片《普通人的一生3》', 'review': 0, 'author': '我是李四儿', 'mid': 498421499, 'created': 1709618184, 'length': '04:40', 'video_review': 8, 'aid': 1351479141, 'bvid': 'BV1Lz421Q7jQ', 'hide_click': False, 'is_pay': 0, 'is_union_video': 0, 'is_steins_gate': 0, 'is_live_playback': 0, 'is_lesson_video': 0, 'is_lesson_finished': 0, 'lesson_update_info': '', 'jump_url': '', 'meta': {'id': 2224667, 'title': '一生系列', 'cover': 'https://archive.biliimg.com/bfs/archive/b07e3cebef9500e58ba833455ade6c45e6fa6cef.jpg', 'mid': 498421499, 'intro': '', 'sign_state': 0, 'attribute': 140, 'stat': {'season_id': 2224667, 'view': 6165021, 'danmaku': 3683, 'reply': 7828, 'favorite': 120071, 'coin': 67436, 'share': 19997, 'like': 524654, 'mtime': 1710341629, 'vt': 0, 'vv': 0}, 'ep_count': 4, 'first_aid': 1950583245, 'ptime': 1709807727, 'ep_num': 4}, 'is_avoided': 0, 'season_id': 2224667, 'attribute': 8405120, 'is_charging_arc': False, 'vt': 0, 'enable_vt': 0, 'vt_display': '', 'playback_position': 51}  
+2024-03-13T22:56:14.838227+0800 SUCCESS 获取视频成功    ---->   {'comment': 369, 'typeid': 21, 'play': 503160, 'pic': 'http://i1.hdslb.com/bfs/archive/a5a1f43bd89f7e39746ab58c82f472d1a0525053.jpg', 'subtitle': '', 'description': '普通人的一生2', 'copyright': '1', 'title': '大型纪录片《普通人的一生2》', 'review': 0, 'author': '我是李四儿', 'mid': 498421499, 'created': 1708464349, 'length': '03:16', 'video_review': 151, 'aid': 1000920905, 'bvid': 'BV1vx4y1k7gm', 'hide_click': False, 'is_pay': 0, 'is_union_video': 0, 'is_steins_gate': 0, 'is_live_playback': 0, 'is_lesson_video': 0, 'is_lesson_finished': 0, 'lesson_update_info': '', 'jump_url': '', 'meta': {'id': 2224667, 'title': '一生系列', 'cover': 'https://archive.biliimg.com/bfs/archive/b07e3cebef9500e58ba833455ade6c45e6fa6cef.jpg', 'mid': 498421499, 'intro': '', 'sign_state': 0, 'attribute': 140, 'stat': {'season_id': 2224667, 'view': 6165021, 'danmaku': 3683, 'reply': 7828, 'favorite': 120071, 'coin': 67436, 'share': 19997, 'like': 524654, 'mtime': 1710341629, 'vt': 0, 'vv': 0}, 'ep_count': 4, 'first_aid': 1950583245, 'ptime': 1709807727, 'ep_num': 4}, 'is_avoided': 0, 'season_id': 2224667, 'attribute': 8405376, 'is_charging_arc': False, 'vt': 0, 'enable_vt': 0, 'vt_display': '', 'playback_position': 100}  
+2024-03-13T22:56:14.841219+0800 SUCCESS 获取视频成功    ---->   {'comment': 429, 'typeid': 21, 'play': 202670, 'pic': 'http://i0.hdslb.com/bfs/archive/12e3c7e62f6efa68d609d9fef9f20da4b312b7ab.jpg', 'subtitle': '', 'description': '我知道有人可能有点视觉疲劳了，说实话，我也有点，我也知道再做这样的视频也没什么流量，毕竟这样的视频在网上铺天盖地，不过我还是选择做了，因为我做视频随心……', 'copyright': '1', 'title': '我只不过是有点视觉疲劳了！而他们却是真的失去了至亲！', 'review': 0, 'author': '我是李四儿', 'mid': 498421499, 'created': 1708221527, 'length': '02:45', 'video_review': 286, 'aid': 1700645338, 'bvid': 'BV1HK421k7jN', 'hide_click': False, 'is_pay': 0, 'is_union_video': 0, 'is_steins_gate': 0, 'is_live_playback': 0, 'is_lesson_video': 0, 'is_lesson_finished': 0, 'lesson_update_info': '', 'jump_url': '', 'meta': None, 'is_avoided': 0, 'season_id': 0, 'attribute': 10502528, 'is_charging_arc': False, 'vt': 0, 'enable_vt': 0, 'vt_display': '', 'playback_position': 0}  
+2024-03-13T22:56:14.845208+0800 SUCCESS 获取视频成功    ---->   {'comment': 7364, 'typeid': 21, 'play': 5641388, 'pic': 'http://i0.hdslb.com/bfs/archive/2a785e7dc188467a2b9f168344a8f2be7b5ec256.jpg', 'subtitle': '', 'description': '普通人的一生', 'copyright': '1', 'title': '大型纪录片《普通人的一生》', 'review': 0, 'author': '我是李四儿', 'mid': 498421499, 'created': 1707637913, 'length': '02:37', 'video_review': 3523, 'aid': 1950583245, 'bvid': 'BV1oC41147o9', 'hide_click': False, 'is_pay': 0, 'is_union_video': 0, 'is_steins_gate': 0, 'is_live_playback': 0, 'is_lesson_video': 0, 'is_lesson_finished': 0, 'lesson_update_info': '', 'jump_url': '', 'meta': {'id': 2224667, 'title': '一生系列', 'cover': 'https://archive.biliimg.com/bfs/archive/b07e3cebef9500e58ba833455ade6c45e6fa6cef.jpg', 'mid': 498421499, 'intro': '', 'sign_state': 0, 'attribute': 140, 'stat': {'season_id': 2224667, 'view': 6165021, 'danmaku': 3683, 'reply': 7828, 'favorite': 120071, 'coin': 67436, 'share': 19997, 'like': 524654, 'mtime': 1710341629, 'vt': 0, 'vv': 0}, 'ep_count': 4, 'first_aid': 1950583245, 'ptime': 1709807727, 'ep_num': 4}, 'is_avoided': 0, 'season_id': 2224667, 'attribute': 8405376, 'is_charging_arc': False, 'vt': 0, 'enable_vt': 0, 'vt_display': '', 'playback_position': 100}  
+2024-03-13T22:56:14.851192+0800 SUCCESS 获取视频成功    ---->   {'comment': 91, 'typeid': 21, 'play': 129211, 'pic': 'http://i1.hdslb.com/bfs/archive/fd0052da57814b35355579ab8994b1ef600cebe0.jpg', 'subtitle': '', 'description': '-', 'copyright': '1', 'title': '大型纪录片《过分的女教师》', 'review': 0, 'author': '我是李四儿', 'mid': 498421499, 'created': 1707378863, 'length': '01:03', 'video_review': 2, 'aid': 1700263481, 'bvid': 'BV1mK421173G', 'hide_click': False, 'is_pay': 0, 'is_union_video': 0, 'is_steins_gate': 0, 'is_live_playback': 0, 'is_lesson_video': 0, 'is_lesson_finished': 0, 'lesson_update_info': '', 'jump_url': '', 'meta': None, 'is_avoided': 0, 'season_id': 0, 'attribute': 10502272, 'is_charging_arc': False, 'vt': 0, 'enable_vt': 0, 'vt_display': '', 'playback_position': 100}  
+2024-03-13T22:56:14.853187+0800 SUCCESS 获取视频成功    ---->   {'comment': 42, 'typeid': 208, 'play': 107037, 'pic': 'http://i1.hdslb.com/bfs/archive/7eb08edba7d765ad2558bbef2a1777a95a3b31b9.jpg', 'subtitle': '', 'description': '-', 'copyright': '1', 'title': '（高清无码）在成人网站教数学3.0', 'review': 0, 'author': '我是李四儿', 'mid': 498421499, 'created': 1706398440, 'length': '01:06', 'video_review': 3, 'aid': 879305297, 'bvid': 'BV1aN4y1J7KC', 'hide_click': False, 'is_pay': 0, 'is_union_video': 0, 'is_steins_gate': 0, 'is_live_playback': 0, 'is_lesson_video': 0, 'is_lesson_finished': 0, 'lesson_update_info': '', 'jump_url': '', 'meta': {'id': 2085893, 'title': '我在p站教数学', 'cover': 'https://s1.hdslb.com/bfs/templar/york-static/viedeo_material_default.png', 'mid': 498421499, 'intro': '我在p站教数学持续为您播出', 'sign_state': 0, 'attribute': 140, 'stat': {'season_id': 2085893, 'view': 4942016, 'danmaku': 532, 'reply': 3583, 'favorite': 40449, 'coin': 2378, 'share': 16723, 'like': 277107, 'mtime': 1710341633, 'vt': 0, 'vv': 0}, 'ep_count': 4, 'first_aid': 581329626, 'ptime': 1709103952, 'ep_num': 4}, 'is_avoided': 0, 'season_id': 2085893, 'attribute': 8405120, 'is_charging_arc': False, 'vt': 0, 'enable_vt': 0, 'vt_display': '', 'playback_position': 62}  
+2024-03-13T22:56:14.855181+0800 SUCCESS 获取视频成功    ---->   {'comment': 638, 'typeid': 21, 'play': 626495, 'pic': 'http://i1.hdslb.com/bfs/archive/eabcdaa71b28cf8eea91e114640dac81191f0aed.jpg', 'subtitle': '', 'description': '我在p站教数学2.0', 'copyright': '1', 'title': '我在p站教数学2.0', 'review': 0, 'author': '我是李四儿', 'mid': 498421499, 'created': 1705281156, 'length': '01:43', 'video_review': 108, 'aid': 581329626, 'bvid': 'BV1n64y1N7LX', 'hide_click': False, 'is_pay': 0, 'is_union_video': 0, 'is_steins_gate': 0, 'is_live_playback': 0, 'is_lesson_video': 0, 'is_lesson_finished': 0, 'lesson_update_info': '', 'jump_url': '', 'meta': {'id': 2085893, 'title': '我在p站教数学', 'cover': 'https://s1.hdslb.com/bfs/templar/york-static/viedeo_material_default.png', 'mid': 498421499, 'intro': '我在p站教数学持续为您播出', 'sign_state': 0, 'attribute': 140, 'stat': {'season_id': 2085893, 'view': 4942016, 'danmaku': 532, 'reply': 3583, 'favorite': 40449, 'coin': 2378, 'share': 16723, 'like': 277107, 'mtime': 1710341633, 'vt': 0, 'vv': 0}, 'ep_count': 4, 'first_aid': 581329626, 'ptime': 1709103952, 'ep_num': 4}, 'is_avoided': 0, 'season_id': 2085893, 'attribute': 8405120, 'is_charging_arc': False, 'vt': 0, 'enable_vt': 0, 'vt_display': '', 'playback_position': 38}  
+2024-03-13T22:56:14.863182+0800 SUCCESS 获取视频成功    ---->   {'comment': 112, 'typeid': 21, 'play': 120700, 'pic': 'http://i2.hdslb.com/bfs/archive/bcf8083193adb5faad73c8beb67625ec0d59623e.jpg', 'subtitle': '', 'description': '-', 'copyright': '1', 'title': '大型纪录片消费者投诉', 'review': 0, 'author': '我是李四儿', 'mid': 498421499, 'created': 1704519907, 'length': '01:12', 'video_review': 8, 'aid': 580907237, 'bvid': 'BV1764y1J7SQ', 'hide_click': False, 'is_pay': 0, 'is_union_video': 0, 'is_steins_gate': 0, 'is_live_playback': 0, 'is_lesson_video': 0, 'is_lesson_finished': 0, 'lesson_update_info': '', 'jump_url': '', 'meta': None, 'is_avoided': 0, 'season_id': 0, 'attribute': 8405376, 'is_charging_arc': False, 'vt': 0, 'enable_vt': 0, 'vt_display': '', 'playback_position': 0}  
+2024-03-13T22:56:14.865155+0800 SUCCESS 获取视频成功    ---->   {'comment': 2898, 'typeid': 21, 'play': 4205723, 'pic': 'http://i2.hdslb.com/bfs/archive/80f6673d16dca82535bef22bb98e8b2838b377f4.jpg', 'subtitle': '', 'description': '-', 'copyright': '1', 'title': '大型纪录片我在p站教数学', 'review': 0, 'author': '我是李四儿', 'mid': 498421499, 'created': 1703830221, 'length': '01:03', 'video_review': 421, 'aid': 240424618, 'bvid': 'BV1Ne411q7Vt', 'hide_click': False, 'is_pay': 0, 'is_union_video': 0, 'is_steins_gate': 0, 'is_live_playback': 0, 'is_lesson_video': 0, 'is_lesson_finished': 0, 'lesson_update_info': '', 'jump_url': '', 'meta': {'id': 2085893, 'title': '我在p站教数学', 'cover': 'https://s1.hdslb.com/bfs/templar/york-static/viedeo_material_default.png', 'mid': 498421499, 'intro': '我在p站教数学持续为您播出', 'sign_state': 0, 'attribute': 140, 'stat': {'season_id': 2085893, 'view': 4942016, 'danmaku': 532, 'reply': 3583, 'favorite': 40449, 'coin': 2378, 'share': 16723, 'like': 277107, 'mtime': 1710341633, 'vt': 0, 'vv': 0}, 'ep_count': 4, 'first_aid': 581329626, 'ptime': 1709103952, 'ep_num': 4}, 'is_avoided': 0, 'season_id': 2085893, 'attribute': 8405120, 'is_charging_arc': False, 'vt': 0, 'enable_vt': 0, 'vt_display': '', 'playback_position': 100}  
+2024-03-13T23:08:38.324737+0800 SUCCESS 1  -----> 30页获取陈工
+2024-03-13T23:08:43.348302+0800 ERROR 2  -----> 页获取失败 进行跳过
+2024-03-13T23:08:53.553010+0800 SUCCESS 3  -----> 0页获取陈工
+2024-03-13T23:08:58.563695+0800 ERROR 4  -----> 页获取失败 进行跳过
+2024-03-13T23:09:08.775419+0800 SUCCESS 5  -----> 0页获取陈工
+2024-03-13T23:09:13.788562+0800 ERROR 6  -----> 页获取失败 进行跳过
+2024-03-13T23:09:23.978614+0800 SUCCESS 7  -----> 0页获取陈工
+2024-03-13T23:09:49.838681+0800 SUCCESS 8  -----> 0页获取陈工
+2024-03-13T23:10:24.940659+0800 SUCCESS 9  -----> 0页获取陈工
+2024-03-13T23:10:37.060525+0800 SUCCESS 10  -----> 0页获取陈工
+2024-03-13T23:10:53.264308+0800 ERROR 2  -----> 页获取失败 进行跳过
+2024-03-13T23:11:21.707719+0800 SUCCESS 4  -----> 0页获取陈工
+2024-03-13T23:11:35.594648+0800 ERROR 6  -----> 页获取失败 进行跳过
+2024-03-13T23:11:45.781069+0800 SUCCESS 2  -----> 5页获取陈工
+2024-03-13T23:11:50.790066+0800 ERROR 6  -----> 页获取失败 进行跳过
+2024-03-13T23:12:00.980415+0800 SUCCESS 6  -----> 0页获取陈工
+2024-03-13T23:12:41.959148+0800 SUCCESS 1  -----> 30   获取陈工
+2024-03-13T23:12:46.974752+0800 ERROR 2 /10 -----> 页获取失败 直接记录了
+2024-03-13T23:12:57.184681+0800 SUCCESS 3  -----> 0   获取陈工
+2024-03-13T23:13:02.198954+0800 ERROR 4 /11 -----> 页获取失败 直接记录了
+2024-03-13T23:13:12.379757+0800 SUCCESS 5  -----> 0   获取陈工
+2024-03-13T23:13:17.386700+0800 ERROR 6 /12 -----> 页获取失败 直接记录了
+2024-03-13T23:13:27.576585+0800 SUCCESS 7  -----> 0   获取陈工
+2024-03-13T23:13:32.584515+0800 ERROR 8 /13 -----> 页获取失败 直接记录了
+2024-03-13T23:13:42.777790+0800 SUCCESS 9  -----> 0   获取陈工
+2024-03-13T23:13:47.790549+0800 ERROR 10 /14 -----> 页获取失败 直接记录了
+2024-03-13T23:13:57.949458+0800 SUCCESS 2  -----> 5   获取陈工
+2024-03-13T23:14:02.962700+0800 ERROR 4 /15 -----> 页获取失败 直接记录了
+2024-03-13T23:14:13.142802+0800 SUCCESS 6  -----> 0   获取陈工
+2024-03-13T23:14:18.157178+0800 ERROR 8 /16 -----> 页获取失败 直接记录了
+2024-03-13T23:14:28.335214+0800 SUCCESS 10  -----> 0   获取陈工
+2024-03-13T23:14:33.350266+0800 ERROR 4 /17 -----> 页获取失败 直接记录了
+2024-03-13T23:14:43.890407+0800 SUCCESS 8  -----> 0   获取陈工
+2024-03-13T23:14:48.909229+0800 ERROR 4 /18 -----> 页获取失败 直接记录了
+2024-03-13T23:14:59.111233+0800 SUCCESS 4  -----> 0   获取陈工
+2024-03-13T23:43:58.217351+0800 SUCCESS 1  -----> 30   获取陈工
+2024-03-13T23:44:03.230627+0800 ERROR 1 /10 -----> 页获取失败 直接记录了
+2024-03-13T23:44:13.420668+0800 SUCCESS 3  -----> 0   获取陈工
+2024-03-13T23:44:18.436829+0800 ERROR 3 /11 -----> 页获取失败 直接记录了
+2024-03-13T23:44:28.641587+0800 SUCCESS 5  -----> 0   获取陈工
+2024-03-13T23:44:33.683150+0800 ERROR 5 /12 -----> 页获取失败 直接记录了
+2024-03-13T23:44:43.868537+0800 SUCCESS 7  -----> 0   获取陈工
+2024-03-13T23:44:48.879850+0800 ERROR 7 /13 -----> 页获取失败 直接记录了
+2024-03-13T23:44:59.063983+0800 SUCCESS 9  -----> 0   获取陈工
+2024-03-13T23:45:04.089833+0800 ERROR 9 /14 -----> 页获取失败 直接记录了
+2024-03-13T23:45:14.238746+0800 SUCCESS 2  -----> 5   获取陈工
+2024-03-13T23:45:19.252475+0800 ERROR 11 /15 -----> 页获取失败 直接记录了
+2024-03-13T23:45:29.463313+0800 SUCCESS 6  -----> 0   获取陈工
+2024-03-13T23:45:34.472993+0800 ERROR 13 /16 -----> 页获取失败 直接记录了
+2024-03-13T23:45:44.654766+0800 SUCCESS 10  -----> 0   获取陈工
+2024-03-13T23:45:49.666856+0800 ERROR 15 /17 -----> 页获取失败 直接记录了
+2024-03-13T23:45:59.853089+0800 SUCCESS 8  -----> 0   获取陈工
+2024-03-13T23:46:04.862518+0800 ERROR 17 /18 -----> 页获取失败 直接记录了
+2024-03-13T23:46:15.046958+0800 SUCCESS 4  -----> 0   获取陈工
+2024-03-13T23:48:14.743416+0800 SUCCESS 1  -----> 30   获取陈工
+2024-03-13T23:48:19.753968+0800 ERROR 1 /10 -----> 页获取失败 直接记录了
+2024-03-13T23:48:29.930791+0800 SUCCESS 3  -----> 0   获取陈工
+2024-03-13T23:48:34.943143+0800 ERROR 3 /11 -----> 页获取失败 直接记录了
+2024-03-13T23:48:45.129378+0800 SUCCESS 5  -----> 0   获取陈工
+2024-03-13T23:48:50.137614+0800 ERROR 5 /12 -----> 页获取失败 直接记录了
+2024-03-13T23:49:00.339453+0800 SUCCESS 7  -----> 0   获取陈工
+2024-03-13T23:49:05.358839+0800 ERROR 7 /13 -----> 页获取失败 直接记录了
+2024-03-13T23:49:15.806686+0800 SUCCESS 9  -----> 0   获取陈工
+2024-03-13T23:49:20.837053+0800 ERROR 9 /14 -----> 页获取失败 直接记录了
+2024-03-13T23:49:31.001180+0800 SUCCESS 2  -----> 5   获取陈工
+2024-03-13T23:49:36.014195+0800 ERROR 11 /15 -----> 页获取失败 直接记录了
+2024-03-13T23:49:46.223327+0800 SUCCESS 6  -----> 0   获取陈工
+2024-03-13T23:49:51.231913+0800 ERROR 13 /16 -----> 页获取失败 直接记录了
+2024-03-13T23:50:01.442390+0800 SUCCESS 10  -----> 0   获取陈工
+2024-03-13T23:50:06.457357+0800 ERROR 15 /17 -----> 页获取失败 直接记录了
+2024-03-13T23:50:16.660189+0800 SUCCESS 8  -----> 0   获取陈工
+2024-03-13T23:50:21.667232+0800 ERROR 17 /18 -----> 页获取失败 直接记录了
+2024-03-13T23:50:31.850367+0800 SUCCESS 4  -----> 0   获取陈工
+2024-03-13T23:50:36.977630+0800 ERROR 下载失败---->  C:\projects\py_win\assert\大型纪录片《普通人的一生2》/video.mp4
+2024-03-13T23:50:47.132074+0800 ERROR 下载失败---->  C:\projects\py_win\assert\我只不过是有点视觉疲劳了！而他们却是真的失去了至亲！/video.mp4
+2024-03-13T23:50:53.785492+0800 ERROR 下载失败---->  C:\projects\py_win\assert\大型纪录片《普通人的一生》/video.mp4
+2024-03-13T23:51:03.751246+0800 ERROR 下载失败---->  C:\projects\py_win\assert\大型纪录片《过分的女教师》/video.mp4
+2024-03-13T23:51:07.371326+0800 ERROR 下载失败---->  C:\projects\py_win\assert\（高清无码）在成人网站教数学3.0/video.mp4
+2024-03-13T23:51:12.018595+0800 ERROR 下载失败---->  C:\projects\py_win\assert\我在p站教数学2.0/video.mp4
+2024-03-13T23:51:16.855133+0800 ERROR 下载失败---->  C:\projects\py_win\assert\大型纪录片消费者投诉/video.mp4
+2024-03-13T23:51:20.030881+0800 ERROR 下载失败---->  C:\projects\py_win\assert\大型纪录片我在p站教数学/video.mp4
+2024-03-13T23:51:23.669685+0800 ERROR 下载失败---->  C:\projects\py_win\assert\大型纪录片之超标英雄 露娜/video.mp4
+2024-03-13T23:55:15.913977+0800 SUCCESS 1  -----> 30   获取陈工
+2024-03-13T23:55:20.923334+0800 ERROR 1 /10 -----> 页获取失败 直接记录了
+2024-03-13T23:55:31.125283+0800 SUCCESS 3  -----> 0   获取陈工
+2024-03-13T23:55:38.334125+0800 SUCCESS 1  -----> 30   获取陈工
+2024-03-13T23:57:07.695448+0800 ERROR 下载失败---->  C:\projects\py_win\assert\大型纪录片《普通人的一生3》/video.mp4
+2024-03-13T23:57:46.192410+0800 ERROR 下载失败---->  C:\projects\py_win\assert\大型纪录片《普通人的一生2》/video.mp4
+2024-03-13T23:58:16.784661+0800 ERROR 下载失败---->  C:\projects\py_win\assert\我只不过是有点视觉疲劳了！而他们却是真的失去了至亲！/video.mp4
+2024-03-13T23:58:45.499917+0800 ERROR 下载失败---->  C:\projects\py_win\assert\大型纪录片《普通人的一生》/video.mp4
+2024-03-13T23:59:14.918589+0800 ERROR 下载失败---->  C:\projects\py_win\assert\大型纪录片《过分的女教师》/video.mp4
+2024-03-13T23:59:38.857800+0800 ERROR 下载失败---->  C:\projects\py_win\assert\（高清无码）在成人网站教数学3.0/video.mp4
+2024-03-14T00:00:03.050990+0800 ERROR 下载失败---->  C:\projects\py_win\assert\我在p站教数学2.0/video.mp4
+2024-03-14T00:00:29.190027+0800 ERROR 下载失败---->  C:\projects\py_win\assert\大型纪录片消费者投诉/video.mp4
+2024-03-14T00:00:52.966674+0800 ERROR 下载失败---->  C:\projects\py_win\assert\大型纪录片我在p站教数学/video.mp4
