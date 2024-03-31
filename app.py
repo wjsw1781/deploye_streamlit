@@ -270,7 +270,7 @@ def detail_part():
     #视频显示 
     bvid_indexof=filed_name.index('bvid')
     bvid=selected_rows_obj[0][bvid_indexof]
-    videod_url=f'http://player.bilibili.com/player.html?bvid={bvid}'
+    videod_url=f'https://player.bilibili.com/player.html?bvid={bvid}'
     iframe_table=f"""<iframe id="my-iframe" src="{videod_url}" width="100%" height="800px" frameborder="0"></iframe>"""
     with st.expander("点击展开/收起原视频"):
         st.markdown(iframe_table, unsafe_allow_html=True)
