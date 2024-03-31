@@ -65,6 +65,7 @@ st.session_state['selected_rows']=pd.DataFrame({})
 st.session_state['video_info']={"shuiyin":[],"shijianzhou":[]}
 st.session_state['shijianzhou_delete_length']=3
 st.session_state['shuiyin_bili']=0.2
+st.session_state['selected_values']=[0,1,2]
 
 
 @st.cache_resource
@@ -72,13 +73,30 @@ def get_db():
     client = MongoClient(host='139.196.158.152', port=27017, username='root', password='1213wzwz', authSource='admin')
     db = client.zhiqiang_hot
     return db
+from spider_up_topic import item_status
+status = item_status.Vidoe_Item_Status()
+# 定义标签和对应的值的字典
+options = {
+    "爬取入库": status.is_spider_to_db,
+    "下载本地": status.is_download_local,
+    "抽帧到wx公众号": status.is_up_4_pic_to_wx,
+    "人工质检通过": status.is_human_ok,
+    "投稿成功": status.is_tougao_success,
+    "错误原因": status.error_reason
+}
 
+# 显示selectbox组件
 def get_data_from_mongodb_by_page(table_name,page_number, page_size=5):
+    # 过滤条件
+    selected_values=st.session_state.get('selected_values')
+    print(selected_values)
+
+
     db = get_db()
     table = db[table_name]
     skip_count = (page_number - 1) * page_size
     # 查询数据并应用分页逻辑
-    cursor = table.find().skip(skip_count).limit(page_size)
+    cursor = table.find({'step':{'$in':selected_values}}).skip(skip_count).limit(page_size)
     page_data=list(cursor)
     print(len(page_data))
     
@@ -115,6 +133,11 @@ def list_part():
     db=get_db()
     choose_table=st.session_state['choose_table']
     total_pages= db[choose_table].count_documents({})//st.session_state['page_size']+1
+    # 显示multiselect组件
+    selected_labels = st.multiselect("选择标签", list(options.keys()))
+    selected_values = [options[label] for label in selected_labels]
+    if selected_values!=st.session_state.get('selected_values'):
+        st.session_state['selected_values'] = selected_values
 
     col1,col2=st.columns(2)
     with col1:
@@ -130,6 +153,9 @@ def list_part():
     
     # 上面的变动引起重新渲染 导致这里发生了不一致
     data_df = get_data_from_mongodb_by_page(choose_table, page_number, page_size)
+    if data_df.empty:
+        st.error("没有数据")
+        return
     if data_df.values!=st.session_state.get('data_df').values:
         st.session_state['data_df'] = data_df
 
