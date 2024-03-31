@@ -20,7 +20,7 @@
             "type": "debugpy",
             "request": "launch",
             // "program": "/usr/local/bin/streamlit",  // /home/xx/tmp/venv/bin/streamlit",
-            "program": "C:/python38/Scripts/streamlit.exe",  // /home/xx/tmp/venv/bin/streamlit",
+            "program": "myenv/Scripts/streamlit.exe",  // /home/xx/tmp/venv/bin/streamlit",
             "args": [
                 "run",
                 "app.py",

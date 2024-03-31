@@ -16,8 +16,6 @@ wx_dialog/images/temp/
 *.ts
 *.m3u8
 user_data/**
-launch.json
-
 
 myenv/
 **/myenv/**
