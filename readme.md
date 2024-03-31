@@ -26,6 +26,9 @@ git remote remove github
 git push origin --delete main
 
 
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple  
+
+
 pip install loguru requests  httpx moviepy==1.0.3 numpy==1.21.5 opencv_python==4.5.5.62   pandas -i https://pypi.tuna.tsinghua.edu.cn/simple  
 
 pip install streamlit -i https://pypi.tuna.tsinghua.edu.cn/simple  
@@ -34,7 +37,6 @@ pip install loguru  numpy==1.21.5    pandas -i https://pypi.tuna.tsinghua.edu.cn
 pip install bilibili-api-python  moviepy  pandas -i https://pypi.tuna.tsinghua.edu.cn/simple  
 pip install redis -i https://pypi.tuna.tsinghua.edu.cn/simple  
 
-pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple  
 
 pip install bilibili-api-python
 
