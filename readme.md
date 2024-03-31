@@ -28,6 +28,8 @@ git push origin --delete main
 
 pip install loguru requests  httpx moviepy==1.0.3 numpy==1.21.5 opencv_python==4.5.5.62   pandas -i https://pypi.tuna.tsinghua.edu.cn/simple  
 
+pip install streamlit -i https://pypi.tuna.tsinghua.edu.cn/simple  
+
 pip install loguru  numpy==1.21.5    pandas -i https://pypi.tuna.tsinghua.edu.cn/simple  
 pip install bilibili-api-python  moviepy  pandas -i https://pypi.tuna.tsinghua.edu.cn/simple  
 pip install redis -i https://pypi.tuna.tsinghua.edu.cn/simple  
@@ -35,6 +37,8 @@ pip install redis -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple  
 
 pip install bilibili-api-python
+
+pip freeze > C:\projects\py_win\requirements.txt
 
 使用一个工具似乎更容易控制浏览器  当然js的能力也要建设起来!!!!
 但是它太好用了 cdp似乎做的事情更牛逼 更确定!!!
