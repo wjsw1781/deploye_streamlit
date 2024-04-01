@@ -10,6 +10,7 @@ when_import_the_module_the_path=os.path.dirname(__file__)
 
 
 
+import random
 import subprocess
 import time
 from loguru import logger
@@ -29,7 +30,6 @@ def measure_execution_time(func):
         return result
     return wrapper
 
-
 @measure_execution_time
 def crop_video_top_ratio(video_path, output_path, crop_height_ratio):
    
@@ -42,27 +42,17 @@ def crop_video_top_ratio(video_path, output_path, crop_height_ratio):
     still_height = height - crop_height
     start_point = (0, crop_height)
     watermark_path=f"{when_import_the_module_the_path}/watermark.png"
-    # crop 裁剪后的宽度 高度  源起始点x y
+    shuiyin_position=random.choice(['W-w-10:H-h-10','W-w-10:(H-h-10)/2','W-w-10:0',])
     cmd = [
         "ffmpeg",
         "-i", video_path,
         "-i", watermark_path,
         "-filter_complex",
-        "[0:v][1:v]overlay=W-w-10:H-h-10", 
-        "-vf", f"crop={width}:{still_height}:{start_point[0]}:{start_point[1]}",
+        f"[0:v][1:v]overlay={shuiyin_position},crop={width}:{still_height}:{start_point[0]}:{start_point[1]}", 
         output_path,
         '-y'
     ]
-    @measure_execution_time
-    def subprocess_call_movipy(cmd):
-        subprocess_call(cmd)
-
-
-    @measure_execution_time
-    def subprocess_call_python(cmd):
-        subprocess.call(cmd)
-
-    subprocess_call_movipy(cmd)
+    subprocess_call(cmd)
     # subprocess_call_python(cmd)
 
     return True
@@ -95,7 +85,7 @@ if __name__ == '__main__':
     output = video+"_crop.mp4"
     crop_height_ratio=0.09
 
-    # crop_video_top_ratio(video, output, crop_height_ratio)
+    crop_video_top_ratio(video, output, crop_height_ratio)
     outputss = video+"_ss.mp4"
     s_start=5
     crop_video_s_start(video, outputss, s_start)

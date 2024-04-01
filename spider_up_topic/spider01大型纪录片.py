@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
-import re
 import sys,os
-
-from pymongo import MongoClient
 basedir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(basedir)
+when_import_the_module_the_path=os.path.dirname(__file__)
 
 project_dir=basedir 
 # 遍历所有父节点目录 如果存在readme.md文件 就返回那个目录
@@ -16,16 +14,27 @@ while True:
     if project_dir==os.path.dirname(project_dir):
         raise ValueError('未找到项目根目录')
 
-
 sys.path.append(parent_dir)
 sys.path.append(os.path.dirname(parent_dir))
 sys.path.append(os.path.dirname(os.path.dirname(parent_dir)))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(parent_dir))))
 
+myenv=f'{project_dir}/myenv/Lib/site-packages/'
+sys.path.append(myenv)
+
+
 os.chdir(basedir)
 
 print('basedir-------------->',basedir)
 sys.path.append(basedir)
+
+
+
+
+
+
+
+from pymongo import MongoClient
 
 import requests
 
@@ -145,13 +154,15 @@ def download_video():
         except Exception as e:
             table_two.update_one({'_id':_id},{'$set':{"step":error_step,'error_reason':"下载过程出错"+str(e)}})
 
-# 投稿
-def upload_video():
+# 裁剪
+def cut_video():
     # 人工认为成功 ---> 剪辑  投稿  ---->投稿成功  调用moviepy  调用chrome 比较麻烦 但也快结束了  马上结束
     from_step=video_item.is_human_ok
     end_step=video_item.is_tougao_success
     error_step=video_item.is_tougao_success+video_item.error_reason
-    for ii in table_two.find({'step':from_step}):
+
+    logger.success('裁剪开始')
+    for ii in table_two.find({'step':{'$in':[from_step,error_step]}}):
         try:
             _id=ii['_id']
             safe_title=ii['safe_title']
@@ -171,33 +182,30 @@ def upload_video():
                 new_shuiyin_bili=shuiyin_bili
             if new_shijianzhou_delete_length is None:
                 new_shijianzhou_delete_length=shijianzhou_delete_length
-            
+            video_mp4_namegood_temp=video_mp4_namegood+"temp.mp4"
 
-
-
-            if not os.path.exists(video_mp4_name):
-                raise ValueError('原视频不存在 没法进行剪辑')
+            if not os.path.exists(video_mp4_namegood_temp):
+                crop_video_top_ratio(video_mp4_name,video_mp4_namegood_temp,new_shuiyin_bili)
             
             if not os.path.exists(video_mp4_namegood):
-            
-                pass
+                crop_video_s_start(video_mp4_namegood_temp,video_mp4_namegood,new_shijianzhou_delete_length)
+
+
 
             table_two.update_one({'_id':_id},{'$set':{"step":end_step,'video_mp4_namegood':video_mp4_namegood}})
 
-            logger.success(f"{curent_time}  {safe_title}  裁剪 投稿过程  __-----__  完成")
+            curent_time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            logger.success(f"{curent_time}  {safe_title}  裁剪 __-----__  完成")
         except Exception as e:
+            logger.error(f"{curent_time}  {safe_title}  裁剪  出错")
             table_two.update_one({'_id':_id},{'$set':{"step":error_step,'error_reason':"裁剪 投稿过程中出错"+str(e)}})
+    
 
-    # table_two.update_many({'step':error_step},{'$set':{'step':from_step}})
-    # table_two.update_many({'step':end_step},{'$set':{'step':from_step}})
-    # table_two.update_many({},{'$set':{'step':from_step}})
+    logger.success('裁剪完成\n\n')
 
-    pass
-
-
-curent_time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 if __name__ == '__main__':
     try:
+        while 1:
 
         # add_count=into_db()
         # if add_count==0:
@@ -206,8 +214,8 @@ if __name__ == '__main__':
 
 
         # download_video()
-
-        upload_video()
+            cut_video()
+            time.sleep(10)
 
     except Exception as e:
         tell_to_wx(str(e))
