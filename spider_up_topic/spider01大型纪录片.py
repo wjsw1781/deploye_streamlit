@@ -90,6 +90,7 @@ def download_video():
 
     from_step=video_item.is_spider_to_db
     end_step=video_item.is_up_4_pic_to_wx
+    error_step=video_item.is_up_4_pic_to_wx+video_item.error_reason
 
     # table_two.update_many({'step':error_step},{'$set':{'step':from_step}})
     # table_two.update_many({'step':end_step},{'$set':{'step':from_step}})
@@ -144,12 +145,53 @@ def download_video():
         except Exception as e:
             table_two.update_one({'_id':_id},{'$set':{"step":error_step,'error_reason':"下载过程出错"+str(e)}})
 
+# 投稿
+def upload_video():
+    # 人工认为成功 ---> 剪辑  投稿  ---->投稿成功  调用moviepy  调用chrome 比较麻烦 但也快结束了  马上结束
+    from_step=video_item.is_human_ok
+    end_step=video_item.is_tougao_success
+    error_step=video_item.is_tougao_success+video_item.error_reason
+    for ii in table_two.find({'step':from_step}):
+        try:
+            _id=ii['_id']
+            safe_title=ii['safe_title']
+            local_name = os.path.abspath(f'./assert/{kind}/{safe_title}')
+            pic_index = f"{local_name}/index.jpg"
+            video_mp4_name = f"{local_name}/video.mp4"
+            video_mp4_namegood = video_mp4_name + "good.mp4"
+
+            # 剪辑配置信息获取
+            shijianzhou_delete_length=ii.get('shijianzhou_delete_length',0)
+            shuiyin_bili=ii.get('shuiyin_bili',0.1)
+            new_shijianzhou_delete_length=ii.get('new_shijianzhou_delete_length',None)
+            new_shuiyin_bili=ii.get('new_shuiyin_bili',None)
+
+            # 总是以用户侧观察的结果为准
+            if new_shuiyin_bili is None:
+                new_shuiyin_bili=shuiyin_bili
+            if new_shijianzhou_delete_length is None:
+                new_shijianzhou_delete_length=shijianzhou_delete_length
+            
 
 
-def check_video(item):
-    pass
 
-def upload_video(item):
+            if not os.path.exists(video_mp4_name):
+                raise ValueError('原视频不存在 没法进行剪辑')
+            
+            if not os.path.exists(video_mp4_namegood):
+            
+                pass
+
+            table_two.update_one({'_id':_id},{'$set':{"step":end_step,'video_mp4_namegood':video_mp4_namegood}})
+
+            logger.success(f"{curent_time}  {safe_title}  裁剪 投稿过程  __-----__  完成")
+        except Exception as e:
+            table_two.update_one({'_id':_id},{'$set':{"step":error_step,'error_reason':"裁剪 投稿过程中出错"+str(e)}})
+
+    # table_two.update_many({'step':error_step},{'$set':{'step':from_step}})
+    # table_two.update_many({'step':end_step},{'$set':{'step':from_step}})
+    # table_two.update_many({},{'$set':{'step':from_step}})
+
     pass
 
 
@@ -163,7 +205,9 @@ if __name__ == '__main__':
         # logger.success(f"{curent_time}  爬取陈工  {add_count} 条入库")
 
 
-        download_video()
+        # download_video()
+
+        upload_video()
 
     except Exception as e:
         tell_to_wx(str(e))

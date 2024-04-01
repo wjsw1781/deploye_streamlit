@@ -1,6 +1,7 @@
 import glob
 import hashlib
 import os
+import time
 import httpx
 from loguru import logger
 
@@ -105,3 +106,18 @@ def tell_to_wx(info):
 
 
 from .wx_img_uploader import aio_save_media_by_wx
+
+
+def measure_execution_time(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        execution_time = end_time - start_time
+        logger.info(f"Execution time of {func.__name__}: {execution_time} seconds")
+        return result
+    return wrapper
+
+
+
+

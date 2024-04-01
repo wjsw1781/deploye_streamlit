@@ -1,3 +1,4 @@
+import os
 from PIL import Image, ImageDraw, ImageFont
 def image_add_text(img_path, text,  savePath,):
     '''
@@ -33,6 +34,26 @@ def image_add_text(img_path, text,  savePath,):
     out.save(savePath)
 
 
+when_import_the_module_the_path=os.path.dirname(__file__)
+
+from PIL import Image, ImageDraw, ImageFont
+
+def generate_transparent_image(text, font_size,output_image_path):
+                               
+    font_path=f'{when_import_the_module_the_path}/瘦金体.ttf'
+    font = ImageFont.truetype(font_path, font_size)
+    text_color=(255, 255, 255)
+    background_color=(255, 255, 255, 0)
+    image_width=len(text)*font_size+10
+
+    img = Image.new("RGBA", (image_width, font_size + 10), background_color)
+    draw = ImageDraw.Draw(img)
+
+    draw.text((0,0), text,fill=text_color, font=font) # 设置水印位置
+    img.save(output_image_path)
+
+    return img
+
 
 if __name__ == '__main__':
     # 示例用法
@@ -43,3 +64,18 @@ if __name__ == '__main__':
 
     
     print("生成的图片路径:", generated_image_path)
+
+
+
+        
+    # 使用示例
+    text = "永远热爱"
+    font_size = 20
+    image_width = 100
+    output_image_path = "output.png"
+
+    # 生成图片
+    image = generate_transparent_image(text, font_size,output_image_path)
+
+    # 保存图片
+    image.save(output_image_path)

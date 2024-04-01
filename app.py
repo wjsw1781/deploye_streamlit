@@ -1,9 +1,9 @@
 
 # -*- coding: utf-8 -*-
-import re
 import sys,os
 basedir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(basedir)
+when_import_the_module_the_path=os.path.dirname(__file__)
 
 project_dir=basedir 
 # 遍历所有父节点目录 如果存在readme.md文件 就返回那个目录
@@ -19,7 +19,7 @@ sys.path.append(os.path.dirname(parent_dir))
 sys.path.append(os.path.dirname(os.path.dirname(parent_dir)))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(parent_dir))))
 
-myenv=f"{project_dir}/myenv/Lib/site-packages/"
+myenv=f'{project_dir}/myenv/Lib/site-packages/'
 sys.path.append(myenv)
 
 
@@ -30,6 +30,7 @@ sys.path.append(basedir)
 
 
 
+import re
 
 
 
