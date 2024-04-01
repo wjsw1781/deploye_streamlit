@@ -82,7 +82,7 @@ options = {
     "抽帧到wx公众号": status.is_up_4_pic_to_wx,
     "人工质检通过": status.is_human_ok,
     "投稿成功": status.is_tougao_success,
-    "错误原因": status.error_reason
+    "全部错误的数据": status.error_reason
 }
 
 # 显示selectbox组件
@@ -133,8 +133,9 @@ def list_part():
     db=get_db()
     choose_table=st.session_state['choose_table']
     total_pages= db[choose_table].count_documents({})//st.session_state['page_size']+1
+
     # 显示multiselect组件
-    selected_labels = st.multiselect("选择标签", list(options.keys()))
+    selected_labels = st.multiselect("过滤关心的step状态", list(options.keys()), default="抽帧到wx公众号")
     selected_values = [options[label] for label in selected_labels]
     if selected_values!=st.session_state.get('selected_values'):
         st.session_state['selected_values'] = selected_values
@@ -166,11 +167,25 @@ def list_part():
     except Exception as e:
         pass
 
-    edited_df = st.data_editor(df_with_selections,
-                               column_config={"Select": st.column_config.CheckboxColumn(required=True),
-                               },
+
+    # 所有字段
+    filed_name=df_with_selections.columns.to_list()
+    # 五年什么项目都必须包含这些关键字段
+    key_filed_name=['Select','_id','step','title']
+    select_fileds = st.multiselect("过滤字段", filed_name, default=key_filed_name)
+    if select_fileds!=st.session_state.get('select_fileds'):
+        st.session_state['select_fileds'] = select_fileds
+
+    # 对字段进行排序操作
+    reordered_df = df_with_selections[select_fileds + [col for col in filed_name if col  not in select_fileds]]
+
+    edited_df = st.data_editor(reordered_df,
+                               column_config={"Select": st.column_config.CheckboxColumn(required=True),},
                                num_rows="dynamic",
+                               height=700,
                                )
+    
+
     # 选择逻辑
     selected_rows = edited_df[edited_df.Select]
     if selected_rows.values!=st.session_state.get('selected_rows').values:
@@ -188,10 +203,6 @@ def list_part():
         del item['Select']
         db[choose_table].update_one({'_id':item['_id']},{'$set':item},upsert=True)
         #   table.update_one({'_id':_id},{'$setOnInsert':item},upsert=True)
-        
-        
-        
-        
         
         print("发生了新增",)
 
@@ -250,7 +261,7 @@ def detail_part():
 
     shijianzhou_changdu=video_length_to_seconds(length)
 
-# 时间轴标注结果part  有一个old  一个new
+    # 时间轴标注结果part  有一个old  一个new
     shijianzhou_ele,shijianzhou_res=st.columns(2)
     with shijianzhou_ele:
         new_shijianzhou_delete_length = st.slider("标注时间轴", 0, shijianzhou_changdu,st.session_state['shijianzhou_delete_length'])
@@ -296,9 +307,15 @@ def detail_part():
     if new_shuiyin_bili!=st.session_state['shuiyin_bili']:
         st.session_state['new_shuiyin_bili']=new_shuiyin_bili
         st.success(f"用户侧认为这个结果不对,需要重新修改: {new_shuiyin_height}")
+    col,col2=st.columns(2)
+    with col:
+        ok_button=st.button("通过",type="primary")
+    with col2:
+        not_ok_button=st.button("不通过",type="primary")
 
-    if st.button("点击提交确认 水印和长度没问题"):
-        # 提交修改
+
+    # 提交修改  最终判定是否进行投稿!!
+    if ok_button:
         table=get_db()[st.session_state['choose_table']]
         table.update_one({"_id":_id},{"$set":{
             "step":3,
@@ -306,6 +323,12 @@ def detail_part():
             "new_shijianzhou_delete_length":new_shijianzhou_delete_length
             }})
         table.update_many({"mid":mid},{"$set":{"shuiyin_bili":new_shuiyin_bili,"shijianzhou_delete_length":new_shijianzhou_delete_length}})
+        st.success("状态已经被修改 3  改稿件已经进入投稿阶段 ")
+
+    if not_ok_button:
+        table=get_db()[st.session_state['choose_table']]
+        table.update_one({"_id":_id},{"$set":{"step":999,}})
+
 
 
     with st.expander("点击展开/收起片段的原图",expanded=True):
