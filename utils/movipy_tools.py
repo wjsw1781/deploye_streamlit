@@ -5,6 +5,23 @@ when_import_the_module_the_path=os.path.dirname(__file__)
 
 
 
+from PIL import Image, ImageDraw, ImageFont
+
+def generate_transparent_image(text, font_size,output_image_path):
+                               
+    font_path=f'{when_import_the_module_the_path}/瘦金体.ttf'
+    font = ImageFont.truetype(font_path, font_size)
+    text_color=(255, 255, 255)
+    background_color=(255, 255, 255, 0)
+    image_width=len(text)*font_size+10
+
+    img = Image.new("RGBA", (image_width, font_size + 10), background_color)
+    draw = ImageDraw.Draw(img)
+
+    draw.text((0,0), text,fill=text_color, font=font) # 设置水印位置
+    img.save(output_image_path)
+
+    return img
 
 
 
@@ -42,6 +59,9 @@ def crop_video_top_ratio(video_path, output_path, crop_height_ratio):
     still_height = height - crop_height
     start_point = (0, crop_height)
     watermark_path=f"{when_import_the_module_the_path}/watermark.png"
+    if not os.path.exists(watermark_path):
+        generate_transparent_image("永远热爱", 20,watermark_path)
+
     shuiyin_position=random.choice(['W-w-10:H-h-10','W-w-10:(H-h-10)/2','W-w-10:0',])
     cmd = [
         "ffmpeg",
