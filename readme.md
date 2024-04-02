@@ -7,6 +7,7 @@ C:\projects\py_win\myenv\Scripts\activate.bat
 
 python -m pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple  
 
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple  
 
 git checkout --orphan  fix 
 git add -A 
@@ -26,7 +27,6 @@ git remote remove github
 git push origin --delete main
 
 
-pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple  
 
 
 pip install loguru requests  httpx moviepy==1.0.3 numpy==1.21.5 opencv_python==4.5.5.62   pandas -i https://pypi.tuna.tsinghua.edu.cn/simple  
