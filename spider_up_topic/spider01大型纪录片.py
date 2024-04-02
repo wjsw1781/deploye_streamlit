@@ -31,27 +31,14 @@ sys.path.append(basedir)
 
 
 
-
-
-
-from pymongo import MongoClient
-
 import requests
 
 from utils import bilibili
-from item_status import Vidoe_Item_Status
-client = MongoClient(host='139.196.158.152', port=27017, username='root', password='1213wzwz', authSource='admin')
-db = client.zhiqiang_hot
-
-
-
 from utils.utils import *
+from .item_status import *
 
-video_item=Vidoe_Item_Status()
 # 总共操纵两个表 一个所有发布这种视频的up主 id  一个是所有视频id
-table_one=db['daxingjilupian_ups']
-table_two=db['daxingjilupian_videos']
-kind="大型纪录片"
+
 
 item={
     'uid':498421499,
@@ -106,6 +93,8 @@ def download_video():
     table_two.update_many({},{'$set':{'step':from_step}})
 
     for ii in table_two.find({'step':from_step}):
+        curent_time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         try:
             _id=ii['_id']
             bvid=ii['bvid']

@@ -25,9 +25,9 @@ from DrissionPage._pages.chromium_tab import ChromiumTab
 
 
 
-def get_one_window_with_out_proxy(item_name):
+def get_one_window_with_out_proxy(chrome_user_data_dir):
 
-    pid_user_data_path=os.path.abspath(f'{project_dir}/user_data/{item_name}/')
+    pid_user_data_path=os.path.abspath(f'{project_dir}/user_data/{chrome_user_data_dir}/')
     os.makedirs(pid_user_data_path, exist_ok=True)
 
     co = ChromiumOptions().auto_port().set_user_data_path(pid_user_data_path)
