@@ -36,57 +36,47 @@ from DrissionPage._pages.chromium_tab import ChromiumTab
 
 item_name="dy_up"
 
-# 上传抖音
-def up_to_dy():
-    from_step=video_item.is_human_ok
-    end_step=video_item.is_tougao_success
-    error_step=video_item.is_tougao_success+video_item.error_reason
-    for ii in table_two.find({'step':from_step}):
-        try:
-            _id=ii['_id']
-            safe_title=ii['safe_title']
-            local_name = os.path.abspath(f'./assert/{kind}/{safe_title}')
-            pic_index = f"{local_name}/index.jpg"
-            video_mp4_name = f"{local_name}/video.mp4"
-            video_mp4_namegood = video_mp4_name + "good.mp4"
-
-            table_two.update_one({'_id':_id},{'$set':{"step":end_step},})
-
-            logger.success(f"{curent_time}  {safe_title}  投稿过程  __-----__  完成")
-        except Exception as e:
-            table_two.update_one({'_id':_id},{'$set':{"step":error_step,'error_reason':"裁剪 投稿过程中出错"+str(e)}})
-
-
-
-    pass
-
-
 from utils.utils import *
 
-
-def main_up_fun():
-
-    pass
 
 
 chrome:ChromiumPage=get_one_window_with_out_proxy(item_name=item_name)
 
 
-url='https://creator.douyin.com/creator-micro/content/publish?enter_from=publish_page'
+url='https://creator.douyin.com/creator-micro/content/manage'
 
 merge_to_mp4_file=r"D:\projects\deploy_streamlit\spider_up_topic\assert\大型纪录片\大型纪录片_普通人的一生2_\video.mp4good.mp4"
 merge_to_mp4_file=r"C:\projects\py_win\assert\龙珠\0a77385138e1a816bcdd246a6dee88c5\ok.mp4"
 title="龙珠z_re"
 description="龙珠z_re_永远热爱"
-
+index_local=r'C:\projects\py_win\assert\封面\龙珠封面.png3.png'
 
 workder_tab=chrome.new_tab(url)
 
 for i in range(10):
+    time.sleep(3)
     # 证明react成功加载
     root=workder_tab.ele('xpath://div[@id="root"]')
-    if root:
+    all_upload_video=workder_tab.eles('@class:video-card--')
+
+    if root and all_upload_video :
         break
+
+for ii in all_upload_video:
+    title=ii.ele('@class:info-title-text--').text
+    status=ii.ele('@class:info-status').text
+    time_up=ii.ele('@class:info-time').text
+    change_fengmian=ii.ele('@text()=修改描述和封面')
+    change_fengmian=workder_tab.ele('xpath://div[@class="semi-upload-drag-area"]')
+
+    if change_fengmian:
+        workder_tab.set.upload_files(merge_to_mp4_file)
+        change_fengmian.click()
+        workder_tab.wait.upload_paths_inputted()
+        
+    logger.success(f'{title}  {status}  {time_up}')
+
+
 
 # 设置要上传的文件
 for i in range(10):
