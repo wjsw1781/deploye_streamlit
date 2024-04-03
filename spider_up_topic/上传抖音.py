@@ -54,6 +54,10 @@ chrome_user_data_dir="dy_up"
 
 from utils.utils import *
 
+from DrissionPage import ChromiumPage, ChromiumOptions
+from DrissionPage._pages.chromium_tab import ChromiumTab
+
+
 
 def main_up_fun(ele):
     url='https://creator.douyin.com/creator-micro/content/publish?enter_from=publish_page'
@@ -68,23 +72,15 @@ def main_up_fun(ele):
 
     # 触发上传视频按钮
     chrome:ChromiumPage=get_one_window_with_out_proxy(chrome_user_data_dir=chrome_user_data_dir)
-
     workder_tab=chrome.new_tab(url)
     workder_tab.set.upload_files(video_mp4_namegood)
-
-    @retry(max_attempts=5, delay=2)
-    def up_video_func():
-        time.sleep(3)
-        up_btn=workder_tab.ele("@@text()=点击上传")
-        if not up_btn:
-            raise ValueError("上传按钮未找到")
-        up_btn.click()
-        time.sleep(3)
-        if not workder_tab.wait.upload_paths_inputted():
-            raise ValueError("没有填写上传路径")
-        return True
-
-    flag1=up_video_func()
+    up_btn=workder_tab.ele("@@text()=或直接将视频文件拖入此区域").parent()
+    if not up_btn:
+        raise ValueError("上传按钮未找到")
+    up_btn.click()
+    while not(workder_tab.wait.upload_paths_inputted()):
+        logger.success("等待上传完成")
+        pass
 
     # 填写标题
     @retry(max_attempts=5, delay=2)
@@ -126,7 +122,7 @@ def main_up_fun(ele):
     workder_tab.close()
     chrome.quit()
 
-    if flag1 and flag2 and flag3 and flag4:
+    if flag2 and flag3 and flag4:
         logger.success(f" {safe_title}  投稿  __-----__  完成")
         table_two.update_one({'_id':_id},{'$set':{"step":end_step}})
 
