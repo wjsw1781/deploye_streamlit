@@ -67,11 +67,10 @@ def main_up_fun(ele):
     pic_index = f"{local_name}/index.jpg"
     video_mp4_name = f"{local_name}/video.mp4"
     video_mp4_namegood = video_mp4_name + "good.mp4"
-    video_mp4_namegood=os.path.abspath(video_mp4_namegood)
+    video_mp4_namegood=str(os.path.abspath(video_mp4_namegood))
     desc=ele.get('desc',"")
 
     # 触发上传视频按钮
-    chrome:ChromiumPage=get_one_window_with_out_proxy(chrome_user_data_dir=chrome_user_data_dir)
     workder_tab=chrome.new_tab(url)
     workder_tab.set.upload_files(video_mp4_namegood)
     up_btn=workder_tab.ele("@@text()=或直接将视频文件拖入此区域").parent()
@@ -79,7 +78,7 @@ def main_up_fun(ele):
         raise ValueError("上传按钮未找到")
     up_btn.click()
     while not(workder_tab.wait.upload_paths_inputted()):
-        logger.success("等待上传完成")
+        logger.info("等待上传完成")
         pass
 
     # 填写标题
@@ -120,7 +119,6 @@ def main_up_fun(ele):
 
     flag4=click_up()
     workder_tab.close()
-    chrome.quit()
 
     if flag2 and flag3 and flag4:
         logger.success(f" {safe_title}  投稿  __-----__  完成")
@@ -132,11 +130,12 @@ def main_up_fun(ele):
         table_two.update_one({'_id':_id},{'$set':{"step":error_step,'error_reason':"裁剪 投稿过程中出错"+str(e)}})
 
         return False
+    
+
 from item_status import *
 
 if __name__ == '__main__':
-    
-
+    chrome:ChromiumPage=get_one_window_with_out_proxy(chrome_user_data_dir=chrome_user_data_dir)
 
     from_step=video_item.is_human_ok
     end_step=video_item.is_tougao_success
@@ -149,6 +148,7 @@ if __name__ == '__main__':
                 main_up_fun(ii)
         except Exception as e:
             tell_to_wx("上传抖音失败  "+str(e))
+        logger.info("已完成 现在没有审核通过的视频了")
         time.sleep(3600)
 
 
