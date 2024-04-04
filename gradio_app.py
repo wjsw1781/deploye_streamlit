@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import datetime
 import sys,os
 basedir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(basedir)
@@ -28,8 +27,31 @@ os.chdir(basedir)
 print('basedir-------------->',basedir)
 sys.path.append(basedir)
 
-from utils.utils import *
-from config import *
+
+import gradio as gr
+
+
+
+from pymongo import MongoClient
+
+client = MongoClient(host='139.196.158.152', port=27017, username='root', password='1213wzwz', authSource='admin')
+db = client.zhiqiang_hot
+
+
+
+with gr.Blocks() as demo:
+    gr.Markdown(
+        """
+        # 基于chatglm-6b的聊天机器人
+        """
+    )
+    gr.Markdown(
+        """
+        ## 输入 
+        """
+    )
+
+demo.launch(server_port=8888, share=True)
 
 
 
@@ -38,7 +60,10 @@ from config import *
 
 
 
-            
-         
 
-          
+
+
+
+
+
+
