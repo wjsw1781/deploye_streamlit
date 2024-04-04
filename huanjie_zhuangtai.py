@@ -22,6 +22,7 @@ class Stage:
     name: str
     step: str = "pending"
     error: bool = False
+    desc:str="无描述"
     @classmethod
     def from_dict(cls, **data):
         return cls(**data)
@@ -43,12 +44,12 @@ class pipeline:
     def add_stage(self, stage):
         self.pipeline.append(stage)
         if len(self.pipeline)==1:
-            self.pipeline[0].step = 'running'
+            self.pipeline[0].step = 'ok'
         self.gregister_pipline()
 
 
     # 修改状态
-    def change_stage_step(self,stage:Stage):
+    def change_stage_step_ok(self,stage:Stage):
         for index,one_stage in enumerate(self.pipeline):
             if one_stage.name == stage.name:
 
@@ -56,24 +57,26 @@ class pipeline:
                 if pre_stage>=0:
                     if self.pipeline[pre_stage].step != 'ok':
                         raise ValueError("上一个环节未完成")
-                
-                
-                one_stage.step = stage.step
 
-
-
+                one_stage.step = 'ok'
                 next_stage=index+1
+                
+                if len(self.pipeline)>next_stage:
+                    self.pipeline[next_stage].step = 'running'
 
+    def change_stage_step_error(self,stage:Stage,error_info):
+        for index,one_stage in enumerate(self.pipeline):
+            if one_stage.name == stage.name:
+                one_stage.step ='error'
+                one_stage.error =error_info
 
-                if stage.step == 'ok':
-                    if len(self.pipeline)>next_stage:
-                        self.pipeline[next_stage].step = 'running'
                 
 
     def restore_pipeline(self,data):
         self.pipeline=[]
         for stage in json.loads(data):
             self.pipeline.append(Stage.from_dict(**stage))
+        return self
 
     def output_pipeline(self):
         dict_list=[asdict(stage) for stage in self.pipeline]
@@ -117,19 +120,19 @@ if __name__ == '__main__':
     print(pipeline_obj.output_pipeline())
     
     stage_obj1.step = 'ok'
-    pipeline_obj.change_stage_step(stage_obj1)
+    pipeline_obj.change_stage_step_ok(stage_obj1)
     print(pipeline_obj.output_pipeline())
     
     stage_obj2.step = 'ok'
-    pipeline_obj.change_stage_step(stage_obj2)
+    pipeline_obj.change_stage_step_ok(stage_obj2)
     print(pipeline_obj.output_pipeline())
     
     stage_obj3.step = 'ok'
-    pipeline_obj.change_stage_step(stage_obj3)
+    pipeline_obj.change_stage_step_ok(stage_obj3)
     print(pipeline_obj.output_pipeline())
     
     stage_obj4.step = 'ok'
-    pipeline_obj.change_stage_step(stage_obj4)
+    pipeline_obj.change_stage_step_ok(stage_obj4)
     print(pipeline_obj.output_pipeline())
 
 
