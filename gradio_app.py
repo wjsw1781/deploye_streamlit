@@ -90,8 +90,10 @@ with gr.Blocks() as demo:
         global now_click
         for index,one_stage in enumerate(all_stage_zhanweifu):
             if index<=now_click:
-                one_stage.visible=True
-            new_all_stage_zhanweifu.append(one_stage)
+                one_new_stage=dynamic_add_huanjie_zhuangtai(visible=True)
+            else:
+                one_new_stage=dynamic_add_huanjie_zhuangtai(visible=False)
+            new_all_stage_zhanweifu.append(one_new_stage)
         now_click+=1
         return new_all_stage_zhanweifu
 
