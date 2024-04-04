@@ -51,8 +51,8 @@ def get_mongo_skip_page(table_name,pagging):
     return datalist
 
 # 动态创建新的可输入组件到ui上
-def dynamic_add_huanjie_zhuangtai():
-    with gr.Row() as one_huanjie:
+def dynamic_add_huanjie_zhuangtai(visible):
+    with gr.Column(visible=visible) as one_huanjie:
     # 下拉框类型
         huanjie_zhuangtai=gr.Dropdown(choices=['制作封面', '视频裁切', '时间轴裁切', '音视频组装'],show_label=False,interactive=True)
         # 描述
@@ -60,10 +60,10 @@ def dynamic_add_huanjie_zhuangtai():
         return one_huanjie
 
 with gr.Blocks() as demo:
-    # 选择关键视图
+    # 选择关键视图  一些全局开关
     with gr.Row():
-        with gr.Column() as col1:
-            show_or_change=gr.Radio(label='选择关键视图', choices=['查看数据表', '修改数据表', ])
+        show_or_change=gr.Radio(label='选择关键视图', choices=['查看数据表', '修改数据表', ])
+        add_pipline_stage=gr.Button(value='增加pipline的环节', )
 
     with gr.Row():
         table_choice=gr.Radio(choices=all_table_names,show_label=False)
@@ -76,8 +76,24 @@ with gr.Blocks() as demo:
         detail_recorder=gr.Json(value={},label="详细的一条记录")
 
     # 动态添加处理流程到一个表里面的pipline字段上
-    one_huanjie=dynamic_add_huanjie_zhuangtai()
-    
+    all_stage_zhanweifu=[]
+    now_click=0
+    with gr.Row():
+        for i in range(10):
+            one_stage = dynamic_add_huanjie_zhuangtai(visible=False)
+            all_stage_zhanweifu.append(one_stage)
+
+
+    @add_pipline_stage.click(inputs=None, outputs= [*all_stage_zhanweifu])
+    def add_pipline_stage():
+        new_all_stage_zhanweifu=[]
+        global now_click
+        for index,one_stage in enumerate(all_stage_zhanweifu):
+            if index<=now_click:
+                one_stage.visible=True
+            new_all_stage_zhanweifu.append(one_stage)
+        now_click+=1
+        return new_all_stage_zhanweifu
 
     @table_choice.change(inputs=table_choice, outputs= [table_df,pagging,df_col_names])
     def update_table_df_by_table(table_choice):
@@ -112,7 +128,7 @@ with gr.Blocks() as demo:
         if not evt.value:
             return res
         value=table_df.iloc[evt.index[0]].to_dict()
-        if 'pipline' in value:
+        if 'pipline' in value and value['pipline']:
             value['pipline']=json.loads(value['pipline'])
 
         res=value
