@@ -53,21 +53,7 @@ def get_mongo_skip_page(table_name,pagging):
 # 动态创建新的可输入组件到ui上
 def dynamic_add_huanjie_zhuangtai(visible):
 
-    # one_stage=gr.MultimodalTextbox(value={
-    #                                         "name": "",
-    #                                         "error":False,
-    #                                         "step":"pending",
-    #                                         'desc':"无描述"
-
-    #                                     },
-    #                                     visible=visible,interactive=True)
-    one_stage=gr.ParamViewer(value={
-                                            "type": "",
-                                            "description":"pending",
-                                            'default':"无描述"
-
-                                        },
-                                        visible=visible,interactive=True)
+    one_stage=gr.Dropdown(choices=['制作封面', '水印裁剪', '时间轴裁剪','音频画面重组','抖音投稿'],visible=visible,interactive=True)
     return one_stage
 
 with gr.Blocks() as demo:
