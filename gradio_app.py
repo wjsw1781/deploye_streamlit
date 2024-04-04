@@ -52,18 +52,28 @@ def get_mongo_skip_page(table_name,pagging):
 
 # 动态创建新的可输入组件到ui上
 def dynamic_add_huanjie_zhuangtai(visible):
-    with gr.Column(visible=visible) as one_huanjie:
-    # 下拉框类型
-        huanjie_zhuangtai=gr.Dropdown(choices=['制作封面', '视频裁切', '时间轴裁切', '音视频组装'],show_label=False,interactive=True)
-        # 描述
-        huanjie_zhuangtai_describe=gr.Textbox(placeholder='请输入描述',show_label=False,interactive=True)
-        return one_huanjie
+
+    # one_stage=gr.MultimodalTextbox(value={
+    #                                         "name": "",
+    #                                         "error":False,
+    #                                         "step":"pending",
+    #                                         'desc':"无描述"
+
+    #                                     },
+    #                                     visible=visible,interactive=True)
+    one_stage=gr.ParamViewer(value={
+                                            "type": "",
+                                            "description":"pending",
+                                            'default':"无描述"
+
+                                        },
+                                        visible=visible,interactive=True)
+    return one_stage
 
 with gr.Blocks() as demo:
     # 选择关键视图  一些全局开关
     with gr.Row():
         show_or_change=gr.Radio(label='选择关键视图', choices=['查看数据表', '修改数据表', ])
-        add_pipline_stage=gr.Button(value='增加pipline的环节', )
 
     with gr.Row():
         table_choice=gr.Radio(choices=all_table_names,show_label=False)
@@ -83,6 +93,9 @@ with gr.Blocks() as demo:
             one_stage = dynamic_add_huanjie_zhuangtai(visible=False)
             all_stage_zhanweifu.append(one_stage)
 
+    with gr.Row():
+        add_pipline_stage=gr.Button(value='增加pipline的环节', )
+        submit_pipline=gr.Button(value='提交此次pipline的所有环节', )
 
     @add_pipline_stage.click(inputs=None, outputs= [*all_stage_zhanweifu])
     def add_pipline_stage():
@@ -96,6 +109,16 @@ with gr.Blocks() as demo:
             new_all_stage_zhanweifu.append(one_new_stage)
         now_click+=1
         return new_all_stage_zhanweifu
+
+    # 提交叫到mongo中 更新所有行的字段
+    @submit_pipline.click(inputs=[*all_stage_zhanweifu], outputs= None)
+    def add_pipline_stage():
+
+        res=[]
+        for index,one_stage in enumerate(all_stage_zhanweifu):
+            res.append(one_stage)
+            print(index,one_stage)
+    
 
     @table_choice.change(inputs=table_choice, outputs= [table_df,pagging,df_col_names])
     def update_table_df_by_table(table_choice):
