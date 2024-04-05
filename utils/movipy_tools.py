@@ -98,6 +98,74 @@ def crop_video_s_start(video_path, output_path, s_start):
 
 
 
+from moviepy.editor import VideoFileClip, ImageClip
+import os
+from moviepy.editor import *
+
+
+from moviepy.editor import ImageClip, VideoFileClip, concatenate_videoclips
+
+
+
+def one_img_2_video(img_path,width,height,duration=5,big_duration=10):
+    img_2_video_path=os.path.abspath('./img_2_video_path.mp4')
+    image = Image.open(img_path)
+    original_width, original_height = image.size
+    new_image = Image.new("RGB", (width, height ), color=(0, 0, 0))
+    if original_width < width or original_height < height:
+        scale = min(width / original_width, height / original_height)
+        new_width = int(original_width * scale)
+        new_height = int(original_height * scale)
+        image = image.resize((new_width, new_height))
+        paste_x = (width - new_width) // 2
+        paste_y = (height - new_height) // 2
+    else:
+        new_width = original_width
+        new_height = original_height
+        paste_x = (width - original_width) // 2
+        paste_y = (height - original_height) // 2
+    new_image = Image.new("RGB", (width, height), color=(0, 0, 0))
+    new_image.paste(image, (paste_x, paste_y))
+    temp_img=img_path+"temp.png"
+    new_image.save(temp_img)
+    fps=30
+    clip = ImageSequenceClip([temp_img]*fps*duration, fps = fps) 
+    clip.write_videofile(img_2_video_path, fps=fps)
+    return img_2_video_path
+
+
+@measure_execution_time
+def add_image_to_video_start(image_path, video_path, output_path,duration=5):
+    # 检查图片和视频路径是否存在
+    if not os.path.exists(image_path):
+        print("Error: 图片路径不存在")
+        return False
+    if not os.path.exists(video_path):
+        print("Error: 视频路径不存在")
+        return False
+
+    video2 = VideoFileClip(video_path)
+    width, height = video2.size
+    img_2_video_path=one_img_2_video(image_path,width,height,duration,video2.duration)
+
+    cmd=f'ffmpeg -i {img_2_video_path} -i {video_path} -filter_complex "[0:v][1:v]concat=n=2:v=1:a=0[outv]" -map "[outv]" -strict -2 {output_path}'
+    os.system(cmd)
+
+    # with open(output_path,'wb') as ff:
+    #     with open(img_2_video_path,'rb') as f:
+    #         ff.write(f.read())
+    #     with open(video_path,'rb') as f:
+    #         ff.write(f.read())
+    # return True
+    
+            
+# pic=r'C:\projects\deploy_streamlit\utils\龙珠封面.png'
+
+# video='C:/projects/py_win/assert/龙珠/9fd01d2a118535035bd77af493641015/_16__.mp4'
+
+# output='C:\projects\deploy_streamlit\output_video.mkv'
+
+# add_image_to_video_start(pic,video,output)
 
 if __name__ == '__main__':
 

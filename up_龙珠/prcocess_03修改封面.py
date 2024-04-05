@@ -61,45 +61,57 @@ def main_logic(i):
 
     workder_tab=chrome.new_tab(url)
     time.sleep(10)
+
+    js=f"""
+            async function main(){{
+
+                elements = document.querySelectorAll('div[class*="video-card-info"]');
+
+                let current_ele=null
+
+                for (var i = 0; i < elements.length; i++) {{
+                    var element = elements[i];
+                    text=element.querySelector('div[class*=info-title-text]').innerText
+                    if(text.includes('{_id}')){{
+                        current_ele=element
+                        break
+                    }}
+                }}
+
+                if(current_ele==null){{
+                    throw "未找到当前稿件"
+                }}
+
+                cli=current_ele.querySelector('div[class*=ghost-btn]')
+                cli.click()
+                await new Promise(resolve => setTimeout(resolve, 2000)); 
+                // 点击替换
+                document.querySelector("#dialog-1").querySelector('div[class*=btn]>span').click()
+
+                await new Promise(resolve => setTimeout(resolve, 2000)); 
+                // 点击选择上传页
+                document.querySelector("#dialog-2").querySelectorAll('div[class*=tabItem]')[1].click()
+
+                await new Promise(resolve => setTimeout(resolve, 2000)); 
+                // 最终触发上传
+                document.querySelector('div[class="semi-upload-drag-area"]').click()
+                await new Promise(resolve => setTimeout(resolve, 2000)); 
+
+}}
+main()
+
+    
+
+"""
     # 所有的稿件div
-    all_div_ele=workder_tab.eles("@@class:video-card-info")
-
-    # 找到当前稿件的div
-    current_div_ele=None
-    for div_ele in all_div_ele:
-        if div_ele.s_ele(f"@@text():{_id}"):
-            current_div_ele=div_ele
-            break
-    if not current_div_ele:
-        raise ValueError(f'未找到当前稿件{_id}')
     
-    fix_desc_index_btn=current_div_ele.ele("@@text()=修改描述和封面")
-    if not fix_desc_index_btn:
-        raise ValueError(f'未找到修改描述和封面按钮')
-    fix_desc_index_btn.click()
-
-    cli1=workder_tab.ele('@@text()=替换')
-    if not cli1:
-        raise ValueError('未找到替换按钮')
-    cli1.click()
-
-    cli1=workder_tab.ele('@@text()=上传封面')
-    if not cli1:
-        raise ValueError('未找到 上传封面')
-    cli1.click()
-
-    cli1=workder_tab.ele('@@text()=点击上传 或直接将图片文件拖入此区域')
-    if not cli1:
-        raise ValueError('未找到 点击上传 或直接将图片文件拖入此区域')
-    cli1.click()
-
     
-    # 上传视频
+    # 上传封面
     workder_tab.set.upload_files(index_img_local_path)
-    up_btn=workder_tab.ele("@@text()=或直接将视频文件拖入此区域").parent()
-    if not up_btn:
-        raise ValueError("上传按钮未找到")
-    up_btn.click()
+
+    workder_tab.run_js(js)
+
+
     while not(workder_tab.wait.upload_paths_inputted()):
         logger.info("等待上传完成")
         pass
