@@ -33,6 +33,7 @@ sys.path.append(basedir)
 
 import gradio as gr
 from pymongo import MongoClient
+from utils.utils import *
 
 client = MongoClient(host='139.196.158.152', port=27017, username='root', password='1213wzwz', authSource='admin')
 db = client.zhiqiang_hot
@@ -50,12 +51,6 @@ def get_mongo_skip_page(table_name,pagging):
     datalist=list(db[table_name].find({}).skip(skip_page).limit(page_size))
     return datalist
 
-# 动态创建新的可输入组件到ui上
-def dynamic_add_huanjie_zhuangtai(visible):
-
-    one_stage=gr.Dropdown(choices=['制作封面', '水印裁剪', '时间轴裁剪','音频画面重组','抖音投稿'],visible=visible,interactive=True)
-    return one_stage
-
 with gr.Blocks() as demo:
     # 选择关键视图  一些全局开关
     with gr.Row():
@@ -69,42 +64,10 @@ with gr.Blocks() as demo:
 
     with gr.Row():
         table_df=gr.Dataframe(pd.DataFrame([]))
-        detail_recorder=gr.Json(value={},label="详细的一条记录")
-
-    # 动态添加处理流程到一个表里面的pipline字段上
-    all_stage_zhanweifu=[]
-    now_click=0
-    with gr.Row():
-        for i in range(10):
-            one_stage = dynamic_add_huanjie_zhuangtai(visible=False)
-            all_stage_zhanweifu.append(one_stage)
-
-    with gr.Row():
-        add_pipline_stage=gr.Button(value='增加pipline的环节', )
-        submit_pipline=gr.Button(value='提交此次pipline的所有环节', )
-
-    @add_pipline_stage.click(inputs=None, outputs= [*all_stage_zhanweifu])
-    def add_pipline_stage():
-        new_all_stage_zhanweifu=[]
-        global now_click
-        for index,one_stage in enumerate(all_stage_zhanweifu):
-            if index<=now_click:
-                one_new_stage=dynamic_add_huanjie_zhuangtai(visible=True)
-            else:
-                one_new_stage=dynamic_add_huanjie_zhuangtai(visible=False)
-            new_all_stage_zhanweifu.append(one_new_stage)
-        now_click+=1
-        return new_all_stage_zhanweifu
-
-    # 提交叫到mongo中 更新所有行的字段
-    @submit_pipline.click(inputs=[*all_stage_zhanweifu], outputs= None)
-    def add_pipline_stage():
-
-        res=[]
-        for index,one_stage in enumerate(all_stage_zhanweifu):
-            res.append(one_stage)
-            print(index,one_stage)
-    
+        with gr.Column():
+            detail_recorder=gr.Json(value={},label="详细的展示一条记录以及器状态")
+            pip_pic=gr.Image()
+        
 
     @table_choice.change(inputs=table_choice, outputs= [table_df,pagging,df_col_names])
     def update_table_df_by_table(table_choice):
@@ -133,17 +96,16 @@ with gr.Blocks() as demo:
         new_df = table_df[reordered_cols]
         return new_df
 
-    @table_df.select(inputs=[show_or_change,table_df], outputs= detail_recorder)
+    @table_df.select(inputs=[show_or_change,table_df], outputs= [detail_recorder,pip_pic])
     def when_select( show_or_change,table_df:pd.DataFrame,evt: gr.SelectData):
-        res={}
+
         if not evt.value:
-            return res
+            return [None,None]
         value=table_df.iloc[evt.index[0]].to_dict()
         if 'pipline' in value and value['pipline']:
             value['pipline']=json.loads(value['pipline'])
-
-        res=value
-        return res
+            pil_img=generate_horizontal_process_flow(value['pipline'])
+        return [value,pil_img]
     
 
 demo.launch(server_port=8888, share=True,server_name='0.0.0.0')

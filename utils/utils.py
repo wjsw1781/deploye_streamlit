@@ -27,6 +27,8 @@ headers = {
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Windows"',
 }
+
+
 async def download_url_big_file(url: str, out: str, info: str):
     # 下载函数
     async with httpx.AsyncClient(headers=headers) as sess:
@@ -73,7 +75,7 @@ def get_safe_title(title):
     safe_title = legal_characters.sub('_', title)
     return safe_title
 
-from .img_handler import image_add_text
+from .img_handler import generate_transparent_image,image_add_text,generate_horizontal_process_flow
 
 
 
