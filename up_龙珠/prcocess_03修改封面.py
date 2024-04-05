@@ -60,9 +60,42 @@ def main_logic(i):
     local_mp4=i['local_mp4']
 
     workder_tab=chrome.new_tab(url)
+    time.sleep(10)
+    # 所有的稿件div
+    all_div_ele=workder_tab.eles("@@class:video-card-info")
 
+    # 找到当前稿件的div
+    current_div_ele=None
+    for div_ele in all_div_ele:
+        if div_ele.s_ele(f"@@text():{_id}"):
+            current_div_ele=div_ele
+            break
+    if not current_div_ele:
+        raise ValueError(f'未找到当前稿件{_id}')
+    
+    fix_desc_index_btn=current_div_ele.ele("@@text()=修改描述和封面")
+    if not fix_desc_index_btn:
+        raise ValueError(f'未找到修改描述和封面按钮')
+    fix_desc_index_btn.click()
+
+    cli1=workder_tab.ele('@@text()=替换')
+    if not cli1:
+        raise ValueError('未找到替换按钮')
+    cli1.click()
+
+    cli1=workder_tab.ele('@@text()=上传封面')
+    if not cli1:
+        raise ValueError('未找到 上传封面')
+    cli1.click()
+
+    cli1=workder_tab.ele('@@text()=点击上传 或直接将图片文件拖入此区域')
+    if not cli1:
+        raise ValueError('未找到 点击上传 或直接将图片文件拖入此区域')
+    cli1.click()
+
+    
     # 上传视频
-    workder_tab.set.upload_files(local_mp4)
+    workder_tab.set.upload_files(index_img_local_path)
     up_btn=workder_tab.ele("@@text()=或直接将视频文件拖入此区域").parent()
     if not up_btn:
         raise ValueError("上传按钮未找到")
@@ -117,12 +150,12 @@ def main_logic(i):
 
 if __name__ == '__main__':
     longzhu_pip_line=pipeline()
-    current_logic=Stage('投稿')
+    current_logic=Stage('修正封面')
 
     pipeline_filed='pipeline'
     chrome_user_data_dir="dy_up"
     chrome=get_one_window_with_out_proxy(chrome_user_data_dir=chrome_user_data_dir)
-    url='https://creator.douyin.com/creator-micro/content/publish?enter_from=publish_page'
+    url='https://creator.douyin.com/creator-micro/content/manage'
 
 
 
@@ -139,19 +172,18 @@ if __name__ == '__main__':
                 continue
             
             try:
-                title=i['title']
+                index=i['index']
 
-                logic_res=main_logic(i)
-                if not logic_res:
-                    raise ValueError('失败 由于是多线程运行错误无法打印')
+                main_logic(i)
                 
                 longzhu_pipline_obj.change_stage_step_ok(current_logic)
-                table.update_one({'_id':i['_id']},{'$set':{pipeline_filed:longzhu_pipline_obj.output_pipeline()}})
             except Exception as e:
                 longzhu_pipline_obj.change_stage_step_error(current_logic,str(e))
 
-                logger.error(f'龙珠处理流程---->{i["_id"]}出错---->{e}')
-                continue
+                
+                logger.error(f'龙珠处理流程---->{index} 出错---->{e}')
+
+            table.update_one({'_id':i['_id']},{'$set':{pipeline_filed:longzhu_pipline_obj.output_pipeline()}})
 
         logger.success(f'{current_logic}---->执行完成')
         time.sleep(100)

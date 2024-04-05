@@ -34,6 +34,7 @@ def get_one_window_with_out_proxy(chrome_user_data_dir):
     co.headless()
     co.headless(False)
     co.set_retry(0)
+    co.set_timeouts(3)
     co.set_pref(arg='profile.default_content_settings.popups', value='0')
     co.set_argument('--hide-crash-restore-bubble')
     page = ChromiumPage(co)
