@@ -22,3 +22,5 @@ myenv/
 **__pycache__/**
 
 *.pyc
+
+utils\__pycache__/*

@@ -83,7 +83,8 @@ def generate_horizontal_process_flow(steps):
     color_map = {
         'ok': 'green',
         'running': 'yellow',
-        'error': 'red'
+        'pending': 'gray',
+        'error': 'red',
     }
     
     # 绘制每个步骤

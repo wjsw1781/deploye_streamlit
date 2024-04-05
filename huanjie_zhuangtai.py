@@ -29,7 +29,7 @@ class Stage:
 
 
 class pipeline:
-    def __init__(self,name):
+    def __init__(self,name="空流水线"):
         self.name=name
         self.pipeline = []
 
@@ -83,14 +83,23 @@ class pipeline:
         return json.dumps(dict_list,ensure_ascii=False)
     
 
-    # 可以运行环节的状态函数吗?
+    # 可以运行环节的状态函数吗?  就判断一个条件 前一个必须是ok 这也是写代码常犯的错误  不自觉或者状态多了以后就开始冲突了
+    # 一次就判断一个东西  自己已经完成
     def can_run_stage_func(self, stage:Stage):
         for index,one_stage in enumerate(self.pipeline):
-            if index == 0:
+            if one_stage.name != stage.name:
+                continue
+            if index == 0 :
                 return True
+            if one_stage.step == 'ok':
+                logger.info("当前环节已经完成")
+                return False
+            
             pre_stage=self.pipeline[index-1]
-            if one_stage.name == stage.name and one_stage.step == 'pending' and pre_stage.step=='ok' :
-                return True
+            if pre_stage.step != 'ok':
+                logger.info("上一个环节未完成")
+                return False
+            return True
         return False
 
 
