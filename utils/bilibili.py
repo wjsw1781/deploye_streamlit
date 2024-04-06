@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import random
 import re
 import sys,os
 basedir = os.path.dirname(__file__)
@@ -27,6 +28,8 @@ import httpx
 from loguru import logger
 import moviepy.editor as mp
 import requests
+
+
 cookies = {
     'buvid3': 'F962C52E-1A98-243D-7D97-4CCBE2966F0326637infoc',
     'b_nut': '1711818926',
@@ -51,6 +54,8 @@ cookies = {
     'bili_ticket_expires': '1712078103',
     'PVID': '1',
 }
+
+
 credential = Credential.from_cookies(cookies)
 
 from bilibili_api import video, sync, user, comment, session, HEADERS
@@ -213,6 +218,25 @@ def download_video_sync(bvid, aid, filename):
         return True
     except Exception as e:
         return False
+
+from bilibili_api import search, sync, video_zone
+
+# 搜索视频 关键词
+async def search_topic_by_kw(key_word='大型纪录片-技师'):
+    return await search.search_by_type(key_word, 
+                                       search_type=search.SearchObjectType.VIDEO,
+                                       order_type=random.choice([search.OrderVideo.CLICK,search.OrderVideo.SCORES]),
+                                       order_sort=0, 
+                                       time_range=10,
+                                       page=1, 
+                                    #  video_zone_type=video_zone.VideoZoneTypes.DOUGA_MMD, 
+                                    #    debug_param_func=print
+                                       )
+
+def search_topic_by_kw_sync(key_word='大型纪录片-技师'):
+    res = sync(search_topic_by_kw(key_word))
+    list_obj_video=res['result']
+    return list_obj_video
 
 
 if __name__ == '__main__':

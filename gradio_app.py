@@ -53,20 +53,8 @@ def get_mongo_skip_page(table_name,pagging):
     return datalist
 
 
-js="""
-window.wzq = 123
-
-let button = document.getElementById('scrapy_bvids')
-
-button.addEventListener('click', () => {
-    console.log("clicked")
-    let html = document.querySelector("body > gradio-app > div").innerHTML
-    console.log(html)
-})
-
-"""
     
-with gr.Blocks(fill_height=True,js=js) as demo:
+with gr.Blocks(fill_height=True,js='./gradio_front.js') as demo:
 
     with gr.Tab(label='大型纪录片的设计'):
         all_topic=list(db['topic'].find({}))
@@ -79,12 +67,12 @@ with gr.Blocks(fill_height=True,js=js) as demo:
             search_btn=gr.Button(value='搜索')
             scrapy_bvids=gr.Button(value='scrapy_bvids',elem_id='scrapy_bvids')
             pass
+
         with gr.Row():
             search_html=gr.HTML("",label='b站检索结果')
-            hidden_html=gr.TextArea("",label='隐藏的html',elem_id='hidden_html',visible=False,interactive=True)
             search_bvids=gr.Dataframe(label='检索到的bvid')
-            pass
-            
+            pre_one_item=gr.HTML("",label='预览一个后台请求到视频')
+
         with gr.Row():
             pass
 
@@ -99,19 +87,23 @@ with gr.Blocks(fill_height=True,js=js) as demo:
             key_word=f"{group}-{topic}"
             return key_word
         
-        @search_btn.click(inputs=[group,topic,key_word], outputs= [search_html])
-        def search_bvids_by_key_word(group,topic,key_word):
+        @search_btn.click(inputs=[key_word], outputs= [search_html])
+        def search_bvids_by_key_word(key_word):
             url=f'https://search.bilibili.com/all?keyword={key_word}&from_source=webtop_search&spm_id_from=333.1007&search_source=5'
             search_html_value=f'<iframe src={url} width="100%" height="600px" frameborder="0"></iframe>'
-
             return search_html_value
         
-    # "document.querySelectorAll('div[class="bili-video-card__info--right"]')"
-        @scrapy_bvids.click(inputs=[search_html], outputs= [search_bvids])
-        def scrapy_bvids_by_search_html(search_html):
-            print(search_html)
-            return None
-
+        @scrapy_bvids.click(inputs=[key_word], outputs= [search_bvids])
+        def scrapy_bvids_by_search_html(key_word):
+            list_video=search_topic_by_kw_sync(key_word)
+            df_list_video=pd.DataFrame(list_video)
+            return df_list_video
+        
+        @search_bvids.select(inputs=[search_bvids], outputs= [pre_one_item])
+        def when_select(search_bvids,evt: gr.SelectData):
+            bvid=search_bvids.iloc[evt.index[0]]['bvid']
+            pre_one_item_value=f'<iframe src="https://player.bilibili.com/player.html?bvid={bvid}" width="100%" height="700px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>'
+            return pre_one_item_value
 
     with gr.Tab(label='新增话题'):
         pass
@@ -175,6 +167,8 @@ with gr.Blocks(fill_height=True,js=js) as demo:
                 pil_img=None    
 
             return [value,pil_img]
+        
+        
         @detail_recorder.change(inputs=[table_choice,show_or_change,detail_recorder], outputs= detail_recorder_json)
         def when_change(table_choice,show_or_change,detail_recorder):
             obj=eval(detail_recorder)

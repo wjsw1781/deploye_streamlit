@@ -95,7 +95,7 @@ def main_logic(i):
     flag3=write_desc()
 
     # 点击上传
-    @retry(max_attempts=50, delay=10)
+    @retry(max_attempts=10, delay=10)
     def click_up():
         if success_url== workder_tab.url:
             return True
