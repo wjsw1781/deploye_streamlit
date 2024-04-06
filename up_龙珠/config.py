@@ -29,15 +29,17 @@ if __name__ == '__main__':
 
     longzhu_pip_line=pipeline(name="龙珠处理流程")
     longzhu_pip_line.add_stage(Stage('下载本地'))
-    longzhu_pip_line.add_stage(Stage('制作封面'))
-    longzhu_pip_line.add_stage(Stage('投稿'))
-    longzhu_pip_line.add_stage(Stage('修正封面'))
+    longzhu_pip_line.add_stage(Stage('制作封面',step='ok'))
+    longzhu_pip_line.add_stage(Stage('抖音投稿',step='ok'))
+    longzhu_pip_line.add_stage(Stage('腾讯微视投稿'))
 
     item={
         'pipeline':longzhu_pip_line.output_pipeline(),
     }
     table.update_many({},{"$set":item})
-    print('添加成功',longzhu_pip_line.output_pipeline())
+    print('所有数据都已经成功重置状态如下')
+    for ii in longzhu_pip_line.pipeline:
+        print(ii)
 
 
 

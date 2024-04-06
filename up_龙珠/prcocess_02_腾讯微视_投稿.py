@@ -58,72 +58,28 @@ def main_logic(i):
     index=i['index']
     index_img_local_path=i['index_img_local_path']
     local_mp4=i['local_mp4']
+    safe_title=i.get('safe_title',None)
+    desc=i.get('desc',None)
 
     workder_tab=chrome.new_tab(url)
-    time.sleep(10)
-
-    js=f"""
-            async function main(){{
-
-                elements = document.querySelectorAll('div[class*="video-card-info"]');
-
-                let current_ele=null
-
-                for (var i = 0; i < elements.length; i++) {{
-                    var element = elements[i];
-                    text=element.querySelector('div[class*=info-title-text]').innerText
-                    if(text.includes('{_id}')){{
-                        current_ele=element
-                        break
-                    }}
-                }}
-
-                if(current_ele==null){{
-                    throw "未找到当前稿件"
-                }}
-
-                cli=current_ele.querySelector('div[class*=ghost-btn]')
-                cli.click()
-                await new Promise(resolve => setTimeout(resolve, 2000)); 
-                // 点击替换
-                document.querySelector("#dialog-1").querySelector('div[class*=btn]>span').click()
-
-                await new Promise(resolve => setTimeout(resolve, 2000)); 
-                // 点击选择上传页
-                document.querySelector("#dialog-2").querySelectorAll('div[class*=tabItem]')[1].click()
-
-                await new Promise(resolve => setTimeout(resolve, 2000)); 
-                // 最终触发上传
-                document.querySelector('div[class="semi-upload-drag-area"]').click()
-                await new Promise(resolve => setTimeout(resolve, 2000)); 
-
-}}
-main()
-
-    
-
-"""
-    # 所有的稿件div
-    
-    
-    # 上传封面
-    workder_tab.set.upload_files(index_img_local_path)
-
-    workder_tab.run_js(js)
-
-
+    time.sleep(5)
+    # 上传视频
+    workder_tab.set.upload_files(local_mp4)
+    up_btn=workder_tab.ele('xpath://div[@class="upload-tip"]').parent()
+    if not up_btn:
+        raise ValueError("上传按钮未找到")
+    up_btn.click()
     while not(workder_tab.wait.upload_paths_inputted()):
         logger.info("等待上传完成")
         pass
 
-    title=title.replace('快手','抖音')[:15]+"_统一会修改封面"
     # 填写标题
     @retry(max_attempts=5, delay=2)
     def write_tile():
-        up_btn=workder_tab.ele("@@placeholder=好的作品标题可获得更多浏览")
+        up_btn=workder_tab.ele('xpath://input[@placeholder="概括视频主要内容，字数建议6-16个字符"]')
         if not up_btn:
             raise ValueError("上传按钮未找到")
-        up_btn.input(title)
+        up_btn.input(safe_title.replace('_',' ')[:19])
         return True
 
     flag2=write_tile()
@@ -131,43 +87,44 @@ main()
     # 填写简介
     @retry(max_attempts=5, delay=2)
     def write_desc():
-        up_btn=workder_tab.ele("@@data-placeholder=添加作品简介")
+        up_btn=workder_tab.ele('xpath://div[@data-placeholder="添加描述"]')
         if not up_btn:
             raise ValueError("描述元素")
-        up_btn.input(title+_id)
+        up_btn.input(safe_title.replace('_',' ')[:19]+desc.replace('抖音','视频号')+_id )
         return True
     flag3=write_desc()
 
-        # 点击上传
-    @retry(max_attempts=20, delay=10)
+    # 点击上传
+    @retry(max_attempts=50, delay=10)
     def click_up():
-        if 'content/manage' in workder_tab.url:
+        if success_url== workder_tab.url:
             return True
-        up_btn=workder_tab.ele("@@text()=发布")
+
+        up_btn=workder_tab.ele("@@text()=发表")
         if not up_btn:
             raise ValueError("上传按钮未找到")
         up_btn.click()
-        current_url=workder_tab.url
-        if 'enter_from=publish_page' in current_url:
+        if url== workder_tab.url:
             raise ValueError("还没有跳转")
-        return True
+        
     flag4=click_up()
     workder_tab.close()
 
     if not (flag2 and flag3 and flag4):
-        return False
+        raise ValueError("上传失败操作过程中失败了")
     logger.success(f'---->{current_logic}  完成')
     return True
 
-
+# 妈的  抖音傻逼 直接给我禁止了!!!!!!!!!!!!!  没必要修改chrome新的缓存了  直接使用一个 就用dy_yp
 if __name__ == '__main__':
     longzhu_pip_line=pipeline()
-    current_logic=Stage('修正封面')
+    current_logic=Stage('腾讯微视投稿')
 
     pipeline_filed='pipeline'
     chrome_user_data_dir="dy_up"
     chrome=get_one_window_with_out_proxy(chrome_user_data_dir=chrome_user_data_dir)
-    url='https://creator.douyin.com/creator-micro/content/manage'
+    url='https://channels.weixin.qq.com/platform/post/create'
+    success_url='https://channels.weixin.qq.com/platform/post/list'
 
 
 
@@ -184,17 +141,18 @@ if __name__ == '__main__':
                 continue
             
             try:
+                title=i['title']
                 index=i['index']
-
+                logger.info(f'---->{title}  开始执行')
                 main_logic(i)
+
                 
                 longzhu_pipline_obj.change_stage_step_ok(current_logic)
             except Exception as e:
                 longzhu_pipline_obj.change_stage_step_error(current_logic,str(e))
 
+                logger.error(f'龙珠处理流程---->{index}出错---->{e}')
                 
-                logger.error(f'龙珠处理流程---->{index} 出错---->{e}')
-
             table.update_one({'_id':i['_id']},{'$set':{pipeline_filed:longzhu_pipline_obj.output_pipeline()}})
 
         logger.success(f'{current_logic}---->执行完成')

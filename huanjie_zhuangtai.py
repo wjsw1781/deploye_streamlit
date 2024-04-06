@@ -80,7 +80,7 @@ class pipeline:
             if index == 0 :
                 return True
             if one_stage.step == 'ok':
-                logger.info("当前环节已经完成")
+                logger.info("当前环节已经ok 完成,不会再次进入主逻辑了")
                 return False
             
             pre_stage=self.pipeline[index-1]
