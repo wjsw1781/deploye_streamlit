@@ -53,16 +53,14 @@ def get_mongo_skip_page(table_name,pagging):
     return datalist
 
 with gr.Blocks(fill_height=True) as demo:
-    def topic_table_choose():
-        all_topic=list(db['topic'].find({}))
-        
-        df=pd.DataFrame(all_topic)
-        return df
 
     with gr.Tab(label='大型纪录片的设计'):
+        all_topic=list(db['topic'].find({}))
+        topic_df=pd.DataFrame(all_topic)
+
         with gr.Row():
             # 下拉框
-            gr.Dropdown(choices=all_table_names,label='选择想要操作的话题',show_label=False)
+            gr.Dropdown(choices=topic_df['group'])
             pass
         with gr.Row():
             pass
