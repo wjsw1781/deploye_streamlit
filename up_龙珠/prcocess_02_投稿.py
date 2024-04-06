@@ -65,7 +65,7 @@ def main_logic(i):
     if len(desc.replace('_','') )<5:
         desc+=f"自b的欣酱 某奇异发力 阿b顶不住,导致下架,发现ks可以投稿成功,现在试试抖音 喜欢请支持 二重转生的欣酱"
     workder_tab=chrome.new_tab(url)
-
+    time.sleep(5)
     # 上传视频
     workder_tab.set.upload_files(local_mp4)
     up_btn=workder_tab.ele("@@text()=或直接将视频文件拖入此区域").parent()
@@ -98,7 +98,7 @@ def main_logic(i):
     flag3=write_desc()
 
         # 点击上传
-    @retry(max_attempts=20, delay=10)
+    @retry(max_attempts=50, delay=10)
     def click_up():
         if 'content/manage' in workder_tab.url:
             return True
@@ -131,7 +131,7 @@ if __name__ == '__main__':
 
 
     while 1:
-        for i in range(14,300):
+        for i in range(1,300):
             i=table.find_one({'index':i})
             if not i:
                 continue
@@ -145,7 +145,7 @@ if __name__ == '__main__':
             try:
                 title=i['title']
                 index=i['index']
-
+                logger.info(f'---->{title}  开始执行')
                 main_logic(i)
 
                 
