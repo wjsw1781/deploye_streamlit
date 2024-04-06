@@ -121,7 +121,7 @@ def measure_execution_time(func):
     return wrapper
 
 # 视频剪辑
-from .movipy_tools import crop_video_s_start,crop_video_top_ratio
+from .movipy_tools import crop_video_s_start,crop_video_top_ratio,only_fix_audio
 
 
 

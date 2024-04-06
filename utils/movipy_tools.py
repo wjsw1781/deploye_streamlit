@@ -135,6 +135,21 @@ def one_img_2_video(img_path,width,height,duration=5,big_duration=10):
 
 
 @measure_execution_time
+def only_fix_audio(video_path, output_path):
+    cmd = [
+        "ffmpeg",
+        "-i", video_path,
+        "-c:v", "copy",  # 复制视频流
+        "-c:a", "aac",   # 使用 AAC 编码音频
+        "-strict", "-2", # 确保兼容性
+        output_path,
+        '-y'             # 覆盖目标文件（如果存在）
+    ]
+    subprocess_call(cmd)
+    return True
+
+
+@measure_execution_time
 def add_image_to_video_start(image_path, video_path, output_path,duration=5):
     # 检查图片和视频路径是否存在
     if not os.path.exists(image_path):

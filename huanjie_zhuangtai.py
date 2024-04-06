@@ -5,17 +5,6 @@ from utils.utils import *
 
 from dataclasses import dataclass, asdict
 
-from pymongo import MongoClient
-import redis 
-#mongodb://root:1213wzwz@139.196.158.152:27017/admin
-
-table_name='pipline_tasks'
-
-client = MongoClient(host='139.196.158.152', port=27017, username='root', password='1213wzwz', authSource='admin')
-
-db = client.zhiqiang_hot
-table=db[table_name]
-
 
 @dataclass
 class Stage:
@@ -39,7 +28,6 @@ class pipeline:
             'name':self.name,
             'pipeline':self.output_pipeline(),
         }
-        table.update_one({'_id':_id},{'$set':item},upsert=True)
         
     def add_stage(self, stage):
         self.pipeline.append(stage)
