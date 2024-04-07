@@ -57,7 +57,7 @@ def main_logic(i):
 
 
     table.update_one({'_id':i['_id']},{'$set':{'ok_mp4':ok_mp4}})
-    logger.success(f'下载完成---->{ok_mp4}')
+    logger.success(f'{current_logic}')
     return True
 if __name__ == '__main__':
     ther_piplie=pipeline()

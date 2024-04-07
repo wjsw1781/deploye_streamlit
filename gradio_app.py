@@ -46,11 +46,13 @@ db = client.zhiqiang_hot
 all_table_names=db.list_collection_names()
 page_size=10
 pipeline_filed='pipeline'
-@functools.lru_cache()
+
+
+# @functools.lru_cache(maxsize=128)
 def get_mongo_skip_page(table_name,pagging):
     skip_page=pagging*page_size
     # 添加order属性
-    
+    logger.success(f'未命中缓存{table_name}   {pagging}')
     datalist=list(db[table_name].find({}).skip(skip_page).limit(page_size).sort("update_tm", -1))
     return datalist
 
@@ -200,6 +202,7 @@ with gr.Blocks(fill_height=True,) as demo:
         def when_select(search_bvids,evt: gr.SelectData):
             current_item=search_bvids.iloc[evt.index[0]].to_dict()
             show_item={
+                    "_id":md5(current_item['bvid']),
                     "id":current_item['id'],
                     "author":current_item['author'],
                     "arcurl":current_item['arcurl'],
@@ -244,6 +247,7 @@ with gr.Blocks(fill_height=True,) as demo:
                               ]
 
             show_item={
+                    "_id":current_item['_id'],
                     "id":current_item['id'],
                     "bvid":current_item['bvid'],
                     "title":current_item['title'],
@@ -253,8 +257,11 @@ with gr.Blocks(fill_height=True,) as demo:
                     
                     "four_wx_imgs":four_wx_imgs,
                     "shuiyin_positon_rate":shuiyin_positon_rate,
-            }
+                    **current_item,
 
+            }
+            if 'step' in current_item and current_item['step']==999:
+                gr.Warning('这个已经被标记不能使用了  水印太大或者其他!!!')
 
             bvid=current_item['bvid']
             pre_one_item_value=f'<iframe src="https://player.bilibili.com/player.html?bvid={bvid}" width="100%" height="700px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>'
