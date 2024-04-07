@@ -201,34 +201,17 @@ with gr.Blocks(fill_height=True,) as demo:
         @search_bvids_df.select(inputs=[search_bvids_df], outputs= [pre_one_item,current_item])
         def when_select(search_bvids,evt: gr.SelectData):
             current_item=search_bvids.iloc[evt.index[0]].to_dict()
-            if "mid" in current_item and len(str(current_item['mid']))>5:
-                mid=current_item['mid']
-            else:
-                mid=3493083962411195
 
-            show_item={
-                    "_id":md5(current_item['bvid']),
-                    "id":current_item['id'],
-                    "author":current_item['author'],
-                    "arcurl":current_item['arcurl'],
-                    "aid":current_item['aid'],
-                    "bvid":current_item['bvid'],
-                    "title":current_item['title'],
-                    "description":current_item['description'],
-                    "play":current_item['play'],
-                    "tag":current_item['tag'],
-                    "review":current_item['review'],
-                    "pubdate":current_item['pubdate'],
-                    "senddate":current_item['senddate'],
-                    "duration":current_item['duration'],
-            }
             bvid=current_item['bvid']
             pre_one_item_value=f'<iframe src="https://player.bilibili.com/player.html?bvid={bvid}" width="100%" height="700px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>'
-            return [pre_one_item_value,show_item]
+            return [pre_one_item_value,current_item]
 
         @shuiyin_positon.change(inputs=[shuiyin_positon,current_item], outputs= [img1,img2,img3,img4])
         def when_change_slider(shuiyin_positon,current_item):
-            shuiyin_positon=shuiyin_positon/100
+            if not(shuiyin_positon):
+                shuiyin_positon=0.5
+            else:
+                shuiyin_positon=shuiyin_positon/100
 
             img1=draw_line_on_image(current_item['four_wx_imgs'][0],shuiyin_positon)
             img2=draw_line_on_image(current_item['four_wx_imgs'][1],shuiyin_positon)
@@ -239,38 +222,16 @@ with gr.Blocks(fill_height=True,) as demo:
         @have_in_db.select(inputs=[have_in_db], outputs= [pre_one_item,current_item,shuiyin_positon,img1,img2,img3,img4])
         def when_select(have_in_db,evt: gr.SelectData):
             current_item=have_in_db.iloc[evt.index[0]].to_dict()
-            if "mid" in current_item and len(str(current_item['mid']))>5:
-                mid=current_item['mid']
-            else:
-                mid=3493083962411195
 
             shuiyin_positon_rate=current_item.get('shuiyin_positon_rate',0)
             four_wx_imgs=current_item.get('four_wx_imgs',[])
-            if not(shuiyin_positon_rate):
-                shuiyin_positon_rate=0
-            if len(four_wx_imgs)!=4:
-                four_wx_imgs=[
-                    'https://picx.zhimg.com/v2-dd20355c2989cafa233cd1c840571877_l.jpg?source=32738c0c',
-                    'https://picx.zhimg.com/v2-dd20355c2989cafa233cd1c840571877_l.jpg?source=32738c0c',
-                    'https://picx.zhimg.com/v2-dd20355c2989cafa233cd1c840571877_l.jpg?source=32738c0c',
-                    'https://picx.zhimg.com/v2-dd20355c2989cafa233cd1c840571877_l.jpg?source=32738c0c',
-                              ]
+            if len(four_wx_imgs)<4:
+                four_wx_imgs=['https://inews.gtimg.com/om_bt/O8sKHb6DwiPSvE7M5rUedf2qS3LwgJv-Yaru6hCqU8scUAA/641']*4
 
-            show_item={
-                    "_id":current_item['_id'],
-                    "id":current_item['id'],
-                    "bvid":current_item['bvid'],
-                    "title":current_item['title'],
-                    "author":current_item['author'],
-                    "play":current_item['play'],
-                    "duration":current_item['duration'],
-                    
-                    "mid":mid,
-                    "four_wx_imgs":four_wx_imgs,
-                    "shuiyin_positon_rate":shuiyin_positon_rate,
-                    **current_item,
+            bvid=current_item['bvid']
 
-            }
+
+         
             if 'step' in current_item and current_item['step']==999:
                 gr.Warning('这个已经被标记不能使用了  水印太大或者其他!!!')
 
@@ -284,7 +245,7 @@ with gr.Blocks(fill_height=True,) as demo:
             img2=draw_line_on_image(four_wx_imgs[1],shuiyin_positon_rate)
             img3=draw_line_on_image(four_wx_imgs[2],shuiyin_positon_rate)
             img4=draw_line_on_image(four_wx_imgs[3],shuiyin_positon_rate)
-            return [pre_one_item_value,show_item,new_shuiyin_positon,img1,img2,img3,img4]
+            return [pre_one_item_value,current_item,new_shuiyin_positon,img1,img2,img3,img4]
 
         @ok_btn.click(inputs=[shuiyin_positon,current_item,group], outputs=info)
         def when_click_ok_btn(shuiyin_positon,current_item,group):
@@ -295,7 +256,7 @@ with gr.Blocks(fill_height=True,) as demo:
             return gr.Warning(f'{author} 的所有稿件已标注水印位置  {shuiyin_positon_rate} ') 
 
         @error_btn.click(inputs=[current_item,group], outputs=info)
-        def when_click_ok_btn(current_item,group):
+        def when_click_err_btn(current_item,group):
             table_name=get_pinyin(group)
             _id=current_item['_id']
             # 反馈这个为彻底不能用

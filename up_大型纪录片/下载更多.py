@@ -64,7 +64,6 @@ def main_logic(i):
     for video in good_other_videos:
         video['_id']=md5(video['bvid'])
         video['find_by_other']=1
-        video['update_tm']=get_current_time()
 
         table.update_one({'_id':video['_id']},{'$set':video},upsert=True)
         
@@ -79,6 +78,7 @@ if __name__ == '__main__':
         cursor=table.find()
 
         for i in cursor:
+            time.sleep(10)
             _id=i['_id']
             if 'mid' not in i:
                 continue

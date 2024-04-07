@@ -153,7 +153,7 @@ if __name__ == '__main__':
             table.update_one({'_id':i['_id']},{'$set':{pipeline_filed:longzhu_pipline_obj.output_pipeline()}})
 
         logger.success(f'{current_logic}----------------------------->执行完成')
-        time.sleep(100)
+        time.sleep(600)
 
 
           
