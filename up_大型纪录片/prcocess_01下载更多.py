@@ -80,6 +80,8 @@ if __name__ == '__main__':
 
         for i in cursor:
             _id=i['_id']
+            if 'mid' not in i:
+                continue
             mid=i['mid']
             if mid in mids:
                 continue

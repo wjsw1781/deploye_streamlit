@@ -27,8 +27,9 @@ ther_piplie=pipeline(name="大型纪录片处理流程")
 ther_piplie.add_stage(Stage('web_ui_choose_bvid_init'))
 ther_piplie.add_stage(Stage('下载本地'))
 ther_piplie.add_stage(Stage('移除水印和时间轴'))
-ther_piplie.add_stage(Stage('抖音投稿'))
-ther_piplie.add_stage(Stage('视频号投稿'))
+ther_piplie.add_stage(Stage('抖音投稿',step='ok'))
+ther_piplie.add_stage(Stage('视频号投稿',step='ok'))
+ther_piplie.add_stage(Stage('快手投稿',step='ok'))
 
 
 item={

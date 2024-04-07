@@ -48,6 +48,10 @@ def main_logic(i):
     ok_mp4=i.get('ok_mp4',None)
     if not(ok_mp4) :
         raise ValueError(f'参数不够 前面的阶段没把这个阶段环节所需要的数据准备好')
+    have_up_douyin=i.get('have_up_douyin',False)
+    if have_up_douyin==111:
+        logger.success(f'---->{title}  已经上传过了')
+        return True
     
     title=os.path.basename(ok_mp4.replace('ok.mp4',''))
 
@@ -102,7 +106,11 @@ def main_logic(i):
 
     if not (flag2 and flag3 and flag4):
         raise ValueError(f"上传失败操作过程中失败了 flag2 {flag2} flag3 {flag3} flag4 {flag4}")
+    
+    table.update_one({'_id':_id},{'$set':{'have_up_douyin':111,}})
+
     logger.success(f'---->{title}  完成')
+
     return True
 
 if __name__ == '__main__':
