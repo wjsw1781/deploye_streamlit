@@ -47,30 +47,44 @@ page_size=30
 pipeline_filed='pipeline'
 
 def get_mongo_skip_page(table_name,pagging):
-    # 获取跳过的条数
     skip_page=pagging*page_size
-    datalist=list(db[table_name].find({}).skip(skip_page).limit(page_size))
+    # 添加order属性
+    
+    datalist=list(db[table_name].find({}).skip(skip_page).limit(page_size).sort("update_tm", -1))
     return datalist
 
+def get_pinyin(text):
+    from pypinyin import pinyin, Style
+    pinyin_list = pinyin(text,style=Style.NORMAL)
+    return '_'.join([p[0] for p in pinyin_list])
 
+def get_current_time():
+    import datetime
+    return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
-with gr.Blocks(fill_height=True,js='./gradio_front.js') as demo:
+with gr.Blocks(fill_height=True,) as demo:
 
-    with gr.Tab(label='大型纪录片的设计'):
+    with gr.Tab(label='大型纪录片的设计-一切从topic开始'):
         all_topic=list(db['topic'].find({}))
         topic_df=pd.DataFrame(all_topic)
+
+        with gr.Row():
+            # gr 提醒
+            info=gr.Warning()
 
         with gr.Row():
             group=gr.Dropdown(choices=topic_df['group'].to_list(),label='选择一个分组')
             topic=gr.Dropdown(choices=topic_df[topic_df['group']==group.value]['topic'].to_list(),label='选择一个子组')
             key_word=gr.Textbox(label='输入关键词',value='',placeholder='默认是group和subgroup的拼接')
             search_btn=gr.Button(value='搜索')
-            scrapy_bvids=gr.Button(value='scrapy_bvids',elem_id='scrapy_bvids')
-            pass
+            add_in_db=gr.Button(value='入库',elem_id='add_in_db')
+
+        with gr.Row(equal_height=True):
+            search_html=gr.HTML("",label='b站检索结果')
+            search_bvids_df=gr.Dataframe(label='检索到的bvid',height=700)
+            current_item=gr.JSON(value={},label='一个json表示当前选中的条目')
 
         with gr.Row():
-            search_html=gr.HTML("",label='b站检索结果')
-            search_bvids=gr.Dataframe(label='检索到的bvid',height=700)
             pre_one_item=gr.HTML("",label='预览一个后台请求到视频')
 
         with gr.Row():
@@ -85,35 +99,50 @@ with gr.Blocks(fill_height=True,js='./gradio_front.js') as demo:
                     img4=gr.Image()
 
 
-
-        @group.change(inputs=group, outputs= [topic])
+        # 意味着选择表  改动两个部分
+        @group.change(inputs=group, outputs= [topic,have_in_db])
         def update_sub_group_topic(group):
             sub_topic=topic_df[topic_df['group']==group]['topic'].to_list()
             topic=gr.Dropdown(choices=sub_topic,label='选择一个子组')
-            return topic
+            table_name=get_pinyin(group)
+
+            #那个group下的所有数据
+            have_in_db_value_df=pd.DataFrame(get_mongo_skip_page(table_name,0))
+            return [topic,have_in_db_value_df]
 
         @topic.change(inputs=[group,topic], outputs= [key_word])
         def update_key_word(group,topic):
             key_word=f"{group}-{topic}"
             return key_word
         
-        @search_btn.click(inputs=[key_word], outputs= [search_html])
+        @search_btn.click(inputs=[key_word], outputs= [search_html,search_bvids_df])
         def search_bvids_by_key_word(key_word):
             url=f'https://search.bilibili.com/all?keyword={key_word}&from_source=webtop_search&spm_id_from=333.1007&search_source=5'
             search_html_value=f'<iframe src={url} width="100%" height="700px" frameborder="0"></iframe>'
-            return search_html_value
-        
-        @scrapy_bvids.click(inputs=[key_word], outputs= [search_bvids])
-        def scrapy_bvids_by_search_html(key_word):
+
             list_video=search_topic_by_kw_sync(key_word)
             df_list_video=pd.DataFrame(list_video)
-            return df_list_video
+            return [search_html_value,df_list_video]
         
-        @search_bvids.select(inputs=[search_bvids], outputs= [pre_one_item])
+        @add_in_db.click(inputs=[group,topic,key_word,current_item],outputs=info)
+        def scrapy_bvids_by_search_html(group,topic,key_word,current_item):
+            table_name=get_pinyin(group)
+
+            item={**current_item,'group':group,'topic':topic,'key_word':key_word,}
+            item['update_tm']=get_current_time()
+            title=item['title']
+            _id=md5(item['bvid'])
+            db[table_name].update_one({'_id':_id},{'$set':item},upsert=True)
+            return f'添加成功 {_id}  {title}'
+         
+        
+        @search_bvids_df.select(inputs=[search_bvids_df], outputs= [pre_one_item,current_item])
         def when_select(search_bvids,evt: gr.SelectData):
-            bvid=search_bvids.iloc[evt.index[0]]['bvid']
+            current_item=search_bvids.iloc[evt.index[0]].to_dict()
+
+            bvid=current_item['bvid']
             pre_one_item_value=f'<iframe src="https://player.bilibili.com/player.html?bvid={bvid}" width="100%" height="700px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>'
-            return pre_one_item_value
+            return [pre_one_item_value,current_item]
 
     with gr.Tab(label='新增话题'):
         pass
