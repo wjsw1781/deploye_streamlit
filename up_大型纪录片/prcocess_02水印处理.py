@@ -48,8 +48,10 @@ def main_logic(i):
     shuiyin_positon_rate=i.get('shuiyin_positon_rate',None)
     if local_mp4 is None or shuiyin_positon_rate is None:
         raise ValueError(f'参数不够 前面有阶段应该是人工那边没进行时间轴水印标注')
-        
+    
     ok_mp4=local_mp4+"ok.mp4"
+
+    
     crop_video_top_ratio(local_mp4,ok_mp4,shuiyin_positon_rate)
 
 

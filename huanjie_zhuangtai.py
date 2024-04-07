@@ -88,6 +88,7 @@ class pipeline:
                 logger.info("上一个环节未完成")
                 return False
             return True
+        logger.info("当前环节未找到 页返回了False ")
         return False
 
 

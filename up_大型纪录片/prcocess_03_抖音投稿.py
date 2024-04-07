@@ -46,10 +46,10 @@ def main_logic(i):
     title=i['title']
 
     ok_mp4=i.get('ok_mp4',None)
-    if ok_mp4 is None:
+    if not(ok_mp4) :
         raise ValueError(f'参数不够 前面的阶段没把这个阶段环节所需要的数据准备好')
     
-    title=ok_mp4.replace('ok.mp4','')
+    title=os.path.basename(ok_mp4.replace('ok.mp4',''))
 
     workder_tab=chrome.new_tab(url)
     time.sleep(5)
@@ -102,7 +102,7 @@ def main_logic(i):
 
     if not (flag2 and flag3 and flag4):
         raise ValueError(f"上传失败操作过程中失败了 flag2 {flag2} flag3 {flag3} flag4 {flag4}")
-    logger.success(f'---->{current_logic}  完成')
+    logger.success(f'---->{title}  完成')
     return True
 
 if __name__ == '__main__':
@@ -124,8 +124,8 @@ if __name__ == '__main__':
             longzhu_pipline_obj=longzhu_pip_line.restore_pipeline(i[pipeline_filed])
             can_run_flag=longzhu_pipline_obj.can_run_stage_func(current_logic)
 
-            # if not can_run_flag:
-            #     continue
+            if not can_run_flag:
+                continue
             
             try:
                 title=i['title']+"\n"

@@ -26,36 +26,16 @@ from huanjie_zhuangtai import Stage,pipeline
 
 
 def init_config_to_all():
-    longzhu_pip_line=pipeline(name="大型纪录片处理流程")
-    longzhu_pip_line.add_stage(Stage('web_ui_choose_bvid_init'))
-    longzhu_pip_line.add_stage(Stage('下载本地'))
-    longzhu_pip_line.add_stage(Stage('移除水印和时间轴'))
-    longzhu_pip_line.add_stage(Stage('投稿'))
 
-
-    item={
-        'pipeline':longzhu_pip_line.output_pipeline(),
-    }
-
-    table.update_many({},{"$setOnInsert":item})
+    table.update_many({},{"$set":item})
 
     print('重置状态成功',)
     for ii in longzhu_pip_line.pipeline:
         print(ii)
 
+
+
 def init_one(_id):
-    longzhu_pip_line=pipeline(name="大型纪录片处理流程")
-    longzhu_pip_line.add_stage(Stage('web_ui_choose_bvid_init'))
-    longzhu_pip_line.add_stage(Stage('下载本地'))
-    longzhu_pip_line.add_stage(Stage('移除水印和时间轴'))
-    longzhu_pip_line.add_stage(Stage('抖音投稿'))
-    longzhu_pip_line.add_stage(Stage('视频号投稿'))
-
-
-    item={
-        'pipeline':longzhu_pip_line.output_pipeline(),
-    }
-
     table.update_one({"_id":_id},{"$set":item})
     print('重置状态成功',_id)
 
@@ -64,7 +44,21 @@ def init_one(_id):
 # 添加流程  实在是ui无法进行添加这个操作 只能在这里进行了
 
 if __name__ == '__main__':
+    longzhu_pip_line=pipeline(name="大型纪录片处理流程")
+    longzhu_pip_line.add_stage(Stage('web_ui_choose_bvid_init'))
+    longzhu_pip_line.add_stage(Stage('下载本地'))
+    longzhu_pip_line.add_stage(Stage('移除水印和时间轴'))
+    longzhu_pip_line.add_stage(Stage('抖音投稿'))
+    longzhu_pip_line.add_stage(Stage('视频号投稿'))
+    
+
+    item={
+        'pipeline':longzhu_pip_line.output_pipeline(),
+    }
+
     init_config_to_all()
+
+
    
 
 
