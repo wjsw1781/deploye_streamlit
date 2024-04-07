@@ -35,7 +35,7 @@ sys.path.append(basedir)
 import gradio as gr
 from pymongo import MongoClient
 from utils.utils import *
-
+import functools
 client = MongoClient(host='139.196.158.152', port=27017, username='root', password='1213wzwz', authSource='admin')
 db = client.zhiqiang_hot
 
@@ -44,9 +44,9 @@ db = client.zhiqiang_hot
 
 
 all_table_names=db.list_collection_names()
-page_size=30
+page_size=10
 pipeline_filed='pipeline'
-
+@functools.lru_cache()
 def get_mongo_skip_page(table_name,pagging):
     skip_page=pagging*page_size
     # 添加order属性
@@ -130,7 +130,7 @@ with gr.Blocks(fill_height=True,) as demo:
             pre_one_item=gr.HTML("",label='预览一个后台请求到视频')
 
         with gr.Row():
-            have_in_db=gr.Dataframe(label='当前已入库的数据',height=700)
+            have_in_db=gr.Dataframe(label='当前已入库的数据',height=1000)
             with gr.Column():
                 shuiyin_positon=gr.Slider(interactive=True,label='水印区域',minimum=0.0,maximum=100.0,step=1.0,value=0)
                 shijianzhou_part=gr.Slider(interactive=True,label='时间轴区域',minimum=0.0,maximum=100.0,step=1.0,value=0)
@@ -152,8 +152,15 @@ with gr.Blocks(fill_height=True,) as demo:
             topic=gr.Dropdown(choices=sub_topic,label='选择一个子组')
             table_name=get_pinyin(group)
 
+            all_table_item=[]
+            for ii in range(100):
+                page_items=get_mongo_skip_page(table_name,ii)
+                if len(page_items)==0:
+                    break
+                all_table_item.extend(page_items)
+            gr.Warning(f'加载到 {ii} 页内容 ') 
             #那个group下的所有数据
-            have_in_db_value_df=pd.DataFrame(get_mongo_skip_page(table_name,0))
+            have_in_db_value_df=pd.DataFrame(all_table_item)
 
             return [topic,have_in_db_value_df]
 
@@ -225,8 +232,16 @@ with gr.Blocks(fill_height=True,) as demo:
         def when_select(have_in_db,evt: gr.SelectData):
             current_item=have_in_db.iloc[evt.index[0]].to_dict()
             shuiyin_positon_rate=current_item.get('shuiyin_positon_rate',0)
+            four_wx_imgs=current_item.get('four_wx_imgs',[])
             if not(shuiyin_positon_rate):
                 shuiyin_positon_rate=0
+            if len(four_wx_imgs)!=4:
+                four_wx_imgs=[
+                    'https://picx.zhimg.com/v2-dd20355c2989cafa233cd1c840571877_l.jpg?source=32738c0c',
+                    'https://picx.zhimg.com/v2-dd20355c2989cafa233cd1c840571877_l.jpg?source=32738c0c',
+                    'https://picx.zhimg.com/v2-dd20355c2989cafa233cd1c840571877_l.jpg?source=32738c0c',
+                    'https://picx.zhimg.com/v2-dd20355c2989cafa233cd1c840571877_l.jpg?source=32738c0c',
+                              ]
 
             show_item={
                     "id":current_item['id'],
@@ -235,8 +250,8 @@ with gr.Blocks(fill_height=True,) as demo:
                     "author":current_item['author'],
                     "play":current_item['play'],
                     "duration":current_item['duration'],
-                    "four_wx_imgs":current_item['four_wx_imgs'],
                     
+                    "four_wx_imgs":four_wx_imgs,
                     "shuiyin_positon_rate":shuiyin_positon_rate,
             }
 
@@ -247,10 +262,10 @@ with gr.Blocks(fill_height=True,) as demo:
             new_shuiyin_positon=gr.Slider(interactive=True,label='水印区域',minimum=0.0,maximum=100.0,step=1.0,value=shuiyin_positon_rate*100)
 
 
-            img1=draw_line_on_image(current_item['four_wx_imgs'][0],shuiyin_positon_rate)
-            img2=draw_line_on_image(current_item['four_wx_imgs'][1],shuiyin_positon_rate)
-            img3=draw_line_on_image(current_item['four_wx_imgs'][2],shuiyin_positon_rate)
-            img4=draw_line_on_image(current_item['four_wx_imgs'][3],shuiyin_positon_rate)
+            img1=draw_line_on_image(four_wx_imgs[0],shuiyin_positon_rate)
+            img2=draw_line_on_image(four_wx_imgs[1],shuiyin_positon_rate)
+            img3=draw_line_on_image(four_wx_imgs[2],shuiyin_positon_rate)
+            img4=draw_line_on_image(four_wx_imgs[3],shuiyin_positon_rate)
             return [pre_one_item_value,show_item,new_shuiyin_positon,img1,img2,img3,img4]
 
         @ok_btn.click(inputs=[shuiyin_positon,current_item,group], outputs=info)

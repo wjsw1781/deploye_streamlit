@@ -60,7 +60,7 @@ def main_logic(i):
     logger.success(f'下载完成---->{ok_mp4}')
     return True
 if __name__ == '__main__':
-    longzhu_pip_line=pipeline()
+    ther_piplie=pipeline()
     current_logic=Stage('移除水印和时间轴')
 
     pipeline_filed='pipeline'
@@ -75,7 +75,7 @@ if __name__ == '__main__':
                 time.sleep(10)
                 continue
 
-            longzhu_pipline_obj=longzhu_pip_line.restore_pipeline(i[pipeline_filed])
+            longzhu_pipline_obj=ther_piplie.restore_pipeline(i[pipeline_filed])
             can_run_flag=longzhu_pipline_obj.can_run_stage_func(current_logic)
 
             if not can_run_flag:

@@ -29,7 +29,7 @@ print('basedir-------------->',basedir)
 sys.path.append(basedir)
 
 from utils.utils import *
-from config import *
+from config import init_one,table
 
 # 环节状态
 
@@ -68,7 +68,7 @@ def main_logic(i):
     logger.success(f'下载完成---->{safe_dir_name}')
     return True
 if __name__ == '__main__':
-    longzhu_pip_line=pipeline()
+    ther_piplie=pipeline('大型纪录片处理流程')
     current_logic=Stage('下载本地')
     pipeline_filed='pipeline'
 
@@ -82,7 +82,7 @@ if __name__ == '__main__':
                 time.sleep(10)
                 continue
 
-            longzhu_pipline_obj=longzhu_pip_line.restore_pipeline(i[pipeline_filed])
+            longzhu_pipline_obj=ther_piplie.restore_pipeline(i[pipeline_filed])
             can_run_flag=longzhu_pipline_obj.can_run_stage_func(current_logic)
 
             if not can_run_flag:
@@ -104,7 +104,7 @@ if __name__ == '__main__':
             table.update_one({'_id':i['_id']},{'$set':{pipeline_filed:longzhu_pipline_obj.output_pipeline()}})
 
         logger.success(f'{current_logic}---->执行完成')
-        time.sleep(100)
+        time.sleep(10)
 
 
 

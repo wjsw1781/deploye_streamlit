@@ -106,7 +106,7 @@ def main_logic(i):
     return True
 
 if __name__ == '__main__':
-    longzhu_pip_line=pipeline()
+    ther_piplie=pipeline()
     current_logic=Stage('抖音投稿')
     pipeline_filed='pipeline'
 
@@ -120,9 +120,11 @@ if __name__ == '__main__':
         for i in cursor:
             _id=i['_id']
 
-
-            longzhu_pipline_obj=longzhu_pip_line.restore_pipeline(i[pipeline_filed])
-            can_run_flag=longzhu_pipline_obj.can_run_stage_func(current_logic)
+            try:
+                longzhu_pipline_obj=ther_piplie.restore_pipeline(i[pipeline_filed])
+                can_run_flag=longzhu_pipline_obj.can_run_stage_func(current_logic)
+            except Exception as e:
+                continue
 
             if not can_run_flag:
                 continue

@@ -117,7 +117,7 @@ def main_logic(i):
 
 # 妈的  抖音傻逼 直接给我禁止了!!!!!!!!!!!!!  没必要修改chrome新的缓存了  直接使用一个 就用dy_yp
 if __name__ == '__main__':
-    longzhu_pip_line=pipeline()
+    ther_piplie=pipeline()
     current_logic=Stage('腾讯微视投稿')
 
     pipeline_filed='pipeline'
@@ -134,7 +134,7 @@ if __name__ == '__main__':
             if not i:
                 continue
 
-            longzhu_pipline_obj=longzhu_pip_line.restore_pipeline(i[pipeline_filed])
+            longzhu_pipline_obj=ther_piplie.restore_pipeline(i[pipeline_filed])
             can_run_flag=longzhu_pipline_obj.can_run_stage_func(current_logic)
 
             if not can_run_flag:
