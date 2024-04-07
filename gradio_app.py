@@ -70,11 +70,21 @@ with gr.Blocks(fill_height=True,js='./gradio_front.js') as demo:
 
         with gr.Row():
             search_html=gr.HTML("",label='b站检索结果')
-            search_bvids=gr.Dataframe(label='检索到的bvid')
+            search_bvids=gr.Dataframe(label='检索到的bvid',height=700)
             pre_one_item=gr.HTML("",label='预览一个后台请求到视频')
 
         with gr.Row():
-            pass
+            have_in_db=gr.Dataframe(label='当前已入库的数据',height=700)
+            with gr.Column():
+                shuiyin_positon=gr.Slider(interactive=True,label='水印区域',minimum=0,maximum=100,step=1,value=0)
+                shijianzhou_part=gr.Slider(interactive=True,label='时间轴区域',minimum=0,maximum=100,step=1,value=0)
+                with gr.Row():
+                    img1=gr.Image()
+                    img2=gr.Image()
+                    img3=gr.Image()
+                    img4=gr.Image()
+
+
 
         @group.change(inputs=group, outputs= [topic])
         def update_sub_group_topic(group):
@@ -90,7 +100,7 @@ with gr.Blocks(fill_height=True,js='./gradio_front.js') as demo:
         @search_btn.click(inputs=[key_word], outputs= [search_html])
         def search_bvids_by_key_word(key_word):
             url=f'https://search.bilibili.com/all?keyword={key_word}&from_source=webtop_search&spm_id_from=333.1007&search_source=5'
-            search_html_value=f'<iframe src={url} width="100%" height="600px" frameborder="0"></iframe>'
+            search_html_value=f'<iframe src={url} width="100%" height="700px" frameborder="0"></iframe>'
             return search_html_value
         
         @scrapy_bvids.click(inputs=[key_word], outputs= [search_bvids])
