@@ -49,7 +49,7 @@ params = {
 }
 from loguru import logger
 while 1:
-    time.sleep(1)
+    time.sleep(0.5)
     try:
         response = httpx.get('https://www.prestige-av.com/api/search', params=params, cookies=cookies, headers=headers,proxies=proxies)
         res=len(response.json()['hits']['hits'])
