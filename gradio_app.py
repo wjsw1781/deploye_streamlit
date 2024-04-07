@@ -89,7 +89,8 @@ def get_wx_img(url):
     return image
 
 def draw_line_on_image(url, slider_value_rate=0.5):
-    
+    if slider_value_rate=="":
+        slider_value_rate=0.5
     image=get_wx_img(url)
     width, height = image.size
     
@@ -133,6 +134,8 @@ with gr.Blocks(fill_height=True,) as demo:
             with gr.Column():
                 shuiyin_positon=gr.Slider(interactive=True,label='水印区域',minimum=0.0,maximum=100.0,step=1.0,value=0)
                 shijianzhou_part=gr.Slider(interactive=True,label='时间轴区域',minimum=0.0,maximum=100.0,step=1.0,value=0)
+
+                ok_btn=gr.Button(value='批量修改水印上百分比|时间轴绝对位置',interactive=True)
 
                 with gr.Column():
                     img1=gr.Image()
@@ -210,16 +213,17 @@ with gr.Blocks(fill_height=True,) as demo:
         @shuiyin_positon.change(inputs=[shuiyin_positon,current_item], outputs= [img1,img2,img3,img4])
         def when_change_slider(shuiyin_positon,current_item):
             shuiyin_positon=shuiyin_positon/100
+
             img1=draw_line_on_image(current_item['four_wx_imgs'][0],shuiyin_positon)
             img2=draw_line_on_image(current_item['four_wx_imgs'][1],shuiyin_positon)
             img3=draw_line_on_image(current_item['four_wx_imgs'][2],shuiyin_positon)
             img4=draw_line_on_image(current_item['four_wx_imgs'][3],shuiyin_positon)
             return [img1,img2,img3,img4]
         
-
         @have_in_db.select(inputs=[have_in_db], outputs= [pre_one_item,current_item,img1,img2,img3,img4])
         def when_select(have_in_db,evt: gr.SelectData):
             current_item=have_in_db.iloc[evt.index[0]].to_dict()
+            shuiyin_positon_rate=current_item.get('shuiyin_positon_rate',0)
 
             show_item={
                     "id":current_item['id'],
@@ -229,27 +233,35 @@ with gr.Blocks(fill_height=True,) as demo:
                     "play":current_item['play'],
                     "duration":current_item['duration'],
                     "four_wx_imgs":current_item['four_wx_imgs'],
-
+                    
+                    "shuiyin_positon_rate":shuiyin_positon_rate,
             }
+
 
             bvid=current_item['bvid']
             pre_one_item_value=f'<iframe src="https://player.bilibili.com/player.html?bvid={bvid}" width="100%" height="700px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>'
 
 
-
-            img1=draw_line_on_image(current_item['four_wx_imgs'][0])
-            img2=draw_line_on_image(current_item['four_wx_imgs'][1])
-            img3=draw_line_on_image(current_item['four_wx_imgs'][2])
-            img4=draw_line_on_image(current_item['four_wx_imgs'][3])
+            img1=draw_line_on_image(current_item['four_wx_imgs'][0],shuiyin_positon_rate)
+            img2=draw_line_on_image(current_item['four_wx_imgs'][1],shuiyin_positon_rate)
+            img3=draw_line_on_image(current_item['four_wx_imgs'][2],shuiyin_positon_rate)
+            img4=draw_line_on_image(current_item['four_wx_imgs'][3],shuiyin_positon_rate)
             return [pre_one_item_value,show_item,img1,img2,img3,img4]
 
+        @ok_btn.click(inputs=[shuiyin_positon,current_item,group], outputs=info)
+        def when_click_ok_btn(shuiyin_positon,current_item,group):
+            shuiyin_positon_rate=shuiyin_positon/100
+            author=current_item['author']
+
+            
+            table_name=get_pinyin(group)
+            db[table_name].update_many({'author':author},{'$set':{'shuiyin_positon_rate':shuiyin_positon_rate,}})
+            return gr.Warning(f'{author} 的所有稿件已标注水印位置  {shuiyin_positon_rate} ') 
 
 
     with gr.Tab(label='新增话题'):
         pass
     
-
-
     with gr.Tab(label='龙珠开始的设计|查看功能为主'):
         with gr.Row():
             show_or_change=gr.Radio(label='选择关键视图', choices=['查看数据表', '修改数据表', ])

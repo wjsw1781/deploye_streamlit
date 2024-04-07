@@ -200,3 +200,18 @@ def get_current_time():
 
 
 
+def retry(max_attempts=3, delay=1):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            attempts = 0
+            while attempts < max_attempts:
+                try:
+                    result = func(*args, **kwargs)
+                    return result
+                except Exception as e:
+                    print(f"Attempt {attempts + 1} failed:", e)
+                    attempts += 1
+                    time.sleep(delay)
+            return False
+        return wrapper
+    return decorator

@@ -48,7 +48,8 @@ def init_one(_id):
     longzhu_pip_line.add_stage(Stage('web_ui_choose_bvid_init'))
     longzhu_pip_line.add_stage(Stage('下载本地'))
     longzhu_pip_line.add_stage(Stage('移除水印和时间轴'))
-    longzhu_pip_line.add_stage(Stage('投稿'))
+    longzhu_pip_line.add_stage(Stage('抖音投稿'))
+    longzhu_pip_line.add_stage(Stage('视频号投稿'))
 
 
     item={
