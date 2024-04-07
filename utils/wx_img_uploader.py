@@ -14,8 +14,6 @@ def get_request(url, proxies=None, retries=3,use_proxy=True,**kargs):
     exception = None
     for i in range(retries):
         try:
-            if use_proxy:
-                proxies=get_proxy_china_http()
             response = httpx.get(url, proxies=proxies,timeout=12,**kargs)
             response.raise_for_status()  # 如果响应状态码不是 200，就抛出异常
             return response

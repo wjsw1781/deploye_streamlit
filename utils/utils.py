@@ -66,7 +66,6 @@ def download_url_big_file_sync(url: str, out: str, info=""):
         return True
 
 
-
 def get_safe_title(title):
     import re
     if not title:
@@ -89,7 +88,7 @@ def merge_to_mp4(dest_file, source_path, delete=True):
                 # print(f'\r{file} Merged! Total:{len(files)}', end="     ")
             os.remove(file)
  
-from .bilibili import preview_h5_video_url,search_topic_by_kw_sync
+from .bilibili import preview_h5_video_url,search_topic_by_kw_sync,download_video_sync,extract_four_frames
 
 
 def tell_to_wx(info):
@@ -109,7 +108,6 @@ def tell_to_wx(info):
 
 from .wx_img_uploader import aio_save_media_by_wx
 
-
 def measure_execution_time(func):
     def wrapper(*args, **kwargs):
         start_time = time.time()
@@ -125,6 +123,80 @@ from .movipy_tools import crop_video_s_start,crop_video_top_ratio,only_fix_audio
 
 
 
-
-
 from .chrome_window import get_one_window_with_out_proxy
+
+
+
+from lxml import etree
+
+from urllib.parse import urljoin
+
+
+def html_to_lxml(html_string):
+    return etree.HTML(html_string)
+
+
+def html_to_string(html):
+    return etree.tostring(html, encoding='utf-8').decode()
+
+
+def extract_img_url(img_tag):
+    urls = []
+    for attr, value in img_tag.items():
+        if value.startswith(('http', '/')) or '/' in value:
+            urls.append(value)
+    if len(set(urls)) >= 1:
+        return urls[0]
+    return ''
+
+
+def format_img_src(html: str, base_url) -> str:
+    ele = html_to_lxml(html)
+    for img in ele.xpath('.//img'):
+        try:
+            src = extract_img_url(img)
+            if 'base64' in src:
+                continue
+            img_url_full = urljoin(base_url, src)
+            img.set('src', img_url_full)
+
+        except Exception as e:
+            continue
+    abs_img_html = html_to_string(ele)
+    return abs_img_html
+
+
+def format_absolute_url(html:str,base_url) -> str:
+    ele=html_to_lxml(html)
+    for link in ele.xpath('.//a'):
+        if 'href' in link.attrib:
+            try:
+                link_url_full = urljoin(base_url, link.attrib['href'])
+                link.set('href', link_url_full)
+            except Exception as e:
+                continue
+    abs_html = html_to_string(ele)
+    abs_html = format_img_src(abs_html,base_url)
+    return abs_html
+
+
+def remove_element_safely(element):
+    # 安全移除一个ele  lxml直接 parent.remove(element) 会导致 ele后面的文本会被删除 类似<img></img>aaa  aaa会被认为属于img
+    parent = element.getparent()
+    new_text_node = etree.Element('span')
+    new_text_node.text = element.tail or ''
+    parent.insert(parent.index(element), new_text_node)
+    parent.remove(element)
+
+def get_a_name_href(a):
+    text=''.join(a.xpath('.//text()'))
+    href=a.attrib['href']
+    return text,href
+
+
+def get_current_time():
+    import datetime
+    return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+
+

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import io
 import json
 import sys,os
 
@@ -58,10 +59,49 @@ def get_pinyin(text):
     pinyin_list = pinyin(text,style=Style.NORMAL)
     return '_'.join([p[0] for p in pinyin_list])
 
-def get_current_time():
-    import datetime
-    return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+# 过滤掉df1中那些df2中已经存在的数据
+def filter_after_in(df1,df2,filed='bvid'):
+    # 两者都有的
+    merged_df = pd.merge(df1, df2, on=filed, how='inner')
+
+    # 获取需要过滤掉的索引信息
+    filter_indices = merged_df.index
+
+    # 过滤掉取反
+    filtered_df_list_video = df1[~df1.index.isin(filter_indices)]
+
+    return filtered_df_list_video
+
+
+# 图片展示
+from PIL import Image
+
+from PIL import Image, ImageDraw
+
+import functools
+
+
+
+@functools.lru_cache()
+def get_wx_img(url):
+    response = requests.get(url)
+    image = Image.open(io.BytesIO(response.content))
+    return image
+
+def draw_line_on_image(url, slider_value_rate=0.5):
     
+    image=get_wx_img(url)
+    width, height = image.size
+    
+    slider_value_rate_y=int(height*slider_value_rate)
+
+    line_image = Image.new("RGB", (width, height))
+    draw = ImageDraw.Draw(line_image)
+    draw.line([(0, slider_value_rate_y), (width, slider_value_rate_y)], fill="red", width=3)
+    combined_image = Image.blend(image, line_image, alpha=0.5)
+    return combined_image
+
+
 with gr.Blocks(fill_height=True,) as demo:
 
     with gr.Tab(label='大型纪录片的设计-一切从topic开始'):
@@ -77,12 +117,13 @@ with gr.Blocks(fill_height=True,) as demo:
             topic=gr.Dropdown(choices=topic_df[topic_df['group']==group.value]['topic'].to_list(),label='选择一个子组')
             key_word=gr.Textbox(label='输入关键词',value='',placeholder='默认是group和subgroup的拼接')
             search_btn=gr.Button(value='搜索')
-            add_in_db=gr.Button(value='入库',elem_id='add_in_db')
 
         with gr.Row(equal_height=True):
-            search_html=gr.HTML("",label='b站检索结果')
-            search_bvids_df=gr.Dataframe(label='检索到的bvid',height=700)
-            current_item=gr.JSON(value={},label='一个json表示当前选中的条目')
+            search_html=gr.HTML("",label='b站检索结果',)
+            search_bvids_df=gr.Dataframe(label='检索到的bvid',height=700,scale=1)
+            with gr.Column():
+                current_item=gr.JSON(value={},label='一个json表示当前选中的条目',scale=1)
+                add_in_db=gr.Button(value='入库',elem_id='add_in_db')
 
         with gr.Row():
             pre_one_item=gr.HTML("",label='预览一个后台请求到视频')
@@ -90,9 +131,10 @@ with gr.Blocks(fill_height=True,) as demo:
         with gr.Row():
             have_in_db=gr.Dataframe(label='当前已入库的数据',height=700)
             with gr.Column():
-                shuiyin_positon=gr.Slider(interactive=True,label='水印区域',minimum=0,maximum=100,step=1,value=0)
-                shijianzhou_part=gr.Slider(interactive=True,label='时间轴区域',minimum=0,maximum=100,step=1,value=0)
-                with gr.Row():
+                shuiyin_positon=gr.Slider(interactive=True,label='水印区域',minimum=0.0,maximum=100.0,step=1.0,value=0)
+                shijianzhou_part=gr.Slider(interactive=True,label='时间轴区域',minimum=0.0,maximum=100.0,step=1.0,value=0)
+
+                with gr.Column():
                     img1=gr.Image()
                     img2=gr.Image()
                     img3=gr.Image()
@@ -108,6 +150,7 @@ with gr.Blocks(fill_height=True,) as demo:
 
             #那个group下的所有数据
             have_in_db_value_df=pd.DataFrame(get_mongo_skip_page(table_name,0))
+
             return [topic,have_in_db_value_df]
 
         @topic.change(inputs=[group,topic], outputs= [key_word])
@@ -115,14 +158,19 @@ with gr.Blocks(fill_height=True,) as demo:
             key_word=f"{group}-{topic}"
             return key_word
         
-        @search_btn.click(inputs=[key_word], outputs= [search_html,search_bvids_df])
-        def search_bvids_by_key_word(key_word):
+        @search_btn.click(inputs=[key_word,have_in_db], outputs= [search_html,search_bvids_df])
+        def search_bvids_by_key_word(key_word,have_in_db):
             url=f'https://search.bilibili.com/all?keyword={key_word}&from_source=webtop_search&spm_id_from=333.1007&search_source=5'
-            search_html_value=f'<iframe src={url} width="100%" height="700px" frameborder="0"></iframe>'
+            search_html_value = f'<iframe src={url} width="100%" height="700px" frameborder="0" allow="autoplay"></iframe>'
 
             list_video=search_topic_by_kw_sync(key_word)
             df_list_video=pd.DataFrame(list_video)
-            return [search_html_value,df_list_video]
+            if len(have_in_db)==0 or len(df_list_video)==0:
+
+                filter_df=df_list_video
+            else:
+                filter_df=filter_after_in(df_list_video,have_in_db)
+            return [search_html_value,filter_df]
         
         @add_in_db.click(inputs=[group,topic,key_word,current_item],outputs=info)
         def scrapy_bvids_by_search_html(group,topic,key_word,current_item):
@@ -133,16 +181,69 @@ with gr.Blocks(fill_height=True,) as demo:
             title=item['title']
             _id=md5(item['bvid'])
             db[table_name].update_one({'_id':_id},{'$set':item},upsert=True)
-            return f'添加成功 {_id}  {title}'
+            
+            return gr.Warning(f'添加成功 {_id}  {title}') 
          
         
         @search_bvids_df.select(inputs=[search_bvids_df], outputs= [pre_one_item,current_item])
         def when_select(search_bvids,evt: gr.SelectData):
             current_item=search_bvids.iloc[evt.index[0]].to_dict()
+            show_item={
+                    "id":current_item['id'],
+                    "author":current_item['author'],
+                    "arcurl":current_item['arcurl'],
+                    "aid":current_item['aid'],
+                    "bvid":current_item['bvid'],
+                    "title":current_item['title'],
+                    "description":current_item['description'],
+                    "play":current_item['play'],
+                    "tag":current_item['tag'],
+                    "review":current_item['review'],
+                    "pubdate":current_item['pubdate'],
+                    "senddate":current_item['senddate'],
+                    "duration":current_item['duration'],
+            }
+            bvid=current_item['bvid']
+            pre_one_item_value=f'<iframe src="https://player.bilibili.com/player.html?bvid={bvid}" width="100%" height="700px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>'
+            return [pre_one_item_value,show_item]
+
+        @shuiyin_positon.change(inputs=[shuiyin_positon,current_item], outputs= [img1,img2,img3,img4])
+        def when_change_slider(shuiyin_positon,current_item):
+            shuiyin_positon=shuiyin_positon/100
+            img1=draw_line_on_image(current_item['four_wx_imgs'][0],shuiyin_positon)
+            img2=draw_line_on_image(current_item['four_wx_imgs'][1],shuiyin_positon)
+            img3=draw_line_on_image(current_item['four_wx_imgs'][2],shuiyin_positon)
+            img4=draw_line_on_image(current_item['four_wx_imgs'][3],shuiyin_positon)
+            return [img1,img2,img3,img4]
+        
+
+        @have_in_db.select(inputs=[have_in_db], outputs= [pre_one_item,current_item,img1,img2,img3,img4])
+        def when_select(have_in_db,evt: gr.SelectData):
+            current_item=have_in_db.iloc[evt.index[0]].to_dict()
+
+            show_item={
+                    "id":current_item['id'],
+                    "bvid":current_item['bvid'],
+                    "title":current_item['title'],
+                    "author":current_item['author'],
+                    "play":current_item['play'],
+                    "duration":current_item['duration'],
+                    "four_wx_imgs":current_item['four_wx_imgs'],
+
+            }
 
             bvid=current_item['bvid']
             pre_one_item_value=f'<iframe src="https://player.bilibili.com/player.html?bvid={bvid}" width="100%" height="700px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>'
-            return [pre_one_item_value,current_item]
+
+
+
+            img1=draw_line_on_image(current_item['four_wx_imgs'][0])
+            img2=draw_line_on_image(current_item['four_wx_imgs'][1])
+            img3=draw_line_on_image(current_item['four_wx_imgs'][2])
+            img4=draw_line_on_image(current_item['four_wx_imgs'][3])
+            return [pre_one_item_value,show_item,img1,img2,img3,img4]
+
+
 
     with gr.Tab(label='新增话题'):
         pass

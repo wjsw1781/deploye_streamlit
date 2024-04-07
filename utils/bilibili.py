@@ -186,6 +186,7 @@ def extract_four_frames(video_path):
     # Create a directory to save the frames
     dir_name=os.path.dirname(video_path)
     frames_dir = f'{dir_name}/extracted_frames'
+
     os.makedirs(frames_dir, exist_ok=True)
     
     # Extract frames at the specified time points
@@ -211,7 +212,7 @@ def get_all_videos_sync(uid, end_pn=3):
     all_videos = sync(get_all_videos(she, end_pn))
     return all_videos
 
-
+# 下载bilibili一个视频
 def download_video_sync(bvid, aid, filename):
     try:
         video_info = sync(download_video_best(bvid, aid, filename))
