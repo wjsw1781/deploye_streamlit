@@ -77,7 +77,7 @@ if __name__ == '__main__':
             _id=i['_id']
             if pipeline_filed not in i:
                 init_one(_id)
-                time.sleep(10)
+                time.sleep(3)
                 continue
 
             longzhu_pipline_obj=ther_piplie.restore_pipeline(i[pipeline_filed])
