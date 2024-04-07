@@ -93,7 +93,7 @@ def download_url_big(url: str, out: str, info: str):
                 f.write(chunk)
 
 # 获取所有视频
-async def get_all_videos(she, end_pn=10):
+async def bili_get_up_all_videos(she, end_pn=10):
     init = list(range(1, end_pn + 1))
     all_videos = []
     max_try=10
@@ -104,18 +104,17 @@ async def get_all_videos(she, end_pn=10):
             videos = await she.get_videos(0, pn, 30)
         except Exception as e:
             videos = []
-            logger.error(f"{index} /{len(init)} {e} -----> 页获取失败 直接记录了")
+            logger.error(f"{pn} /{len(init)} {e} -----> 页获取失败 直接记录了")
             time.sleep(10)
             init.append(pn)
             cur_try+=1
             if cur_try>max_try:
-                logger.error(f"{index} /{len(init)} 重试次数过多 退出")
                 break
             continue
-            continue
+            
         videos_meta = videos['list']['vlist']
         all_videos += videos_meta
-        logger.debug(f"{pn}  -----> {len(all_videos)}   获取陈工")
+        logger.debug(f"{pn} /{len(init)}  进度 {index}/{len(init)}-----> {len(all_videos)}   获取陈工")
         time.sleep(5)
     return all_videos
 
@@ -207,9 +206,9 @@ def extract_four_frames(video_path):
     return all_img_path
 
 # 同步获取视频列表 /////////////////////
-def get_all_videos_sync(uid, end_pn=3):
+def bili_get_up_videos_sync(uid, end_pn=3):
     she = user.User(uid, credential=credential)
-    all_videos = sync(get_all_videos(she, end_pn))
+    all_videos = sync(bili_get_up_all_videos(she, end_pn))
     return all_videos
 
 # 下载bilibili一个视频

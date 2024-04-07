@@ -52,7 +52,7 @@ def main_logic(i):
     title=os.path.basename(ok_mp4.replace('ok.mp4',''))
 
     workder_tab=chrome.new_tab(url)
-    time.sleep(5)
+    time.sleep(15)
     # 上传视频
     workder_tab.set.upload_files(ok_mp4)
     up_btn=workder_tab.ele("@@text()=或直接将视频文件拖入此区域").parent()
@@ -144,7 +144,7 @@ if __name__ == '__main__':
 
             table.update_one({'_id':i['_id']},{'$set':{pipeline_filed:longzhu_pipline_obj.output_pipeline()}})
 
-        logger.success(f'{current_logic}---->执行完成')
+        logger.success(f'{current_logic}----------------------------->执行完成')
         time.sleep(100)
 
 

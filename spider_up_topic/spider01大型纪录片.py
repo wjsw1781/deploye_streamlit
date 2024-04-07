@@ -57,7 +57,7 @@ def into_db():
     for recorder in uids:
         uid=recorder['uid']
         uid=int(uid)
-        all_video = bilibili.get_all_videos_sync(uid, 3)
+        all_video = bilibili.bili_get_up_videos_sync(uid, 3)
 
         good_video = list(filter(lambda x: x['play'] > 10000, all_video))
 

@@ -88,7 +88,7 @@ def merge_to_mp4(dest_file, source_path, delete=True):
                 # print(f'\r{file} Merged! Total:{len(files)}', end="     ")
             os.remove(file)
  
-from .bilibili import preview_h5_video_url,search_topic_by_kw_sync,download_video_sync,extract_four_frames
+from .bilibili import preview_h5_video_url,search_topic_by_kw_sync,download_video_sync,extract_four_frames,bili_get_up_videos_sync
 
 
 def tell_to_wx(info):

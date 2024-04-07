@@ -83,7 +83,7 @@ if __name__ == '__main__':
             
             try:
                 title=i['title']+"\n"
-
+                logger.info(title)
                 main_logic(i)
 
                 longzhu_pipline_obj.change_stage_step_ok(current_logic)

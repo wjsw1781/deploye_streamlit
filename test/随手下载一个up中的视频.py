@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     for uid in uids:
 
-        all_video = bilibili.get_all_videos_sync(uid, 1)
+        all_video = bilibili.bili_get_up_videos_sync(uid, 1)
 
         good_video = list(filter(lambda x: x['play'] > 10000, all_video))
         for video in good_video:
