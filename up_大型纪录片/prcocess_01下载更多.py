@@ -48,30 +48,47 @@ def main_logic(i):
     # 计算平均数字播放量 还有中位数
     all_play=[]
     for j in other_videos:
-        total+=j['play']
         all_play.append(j['play'])
     median_value = statistics.median(all_play)
     mean_value = statistics.mean(all_play)
+    magic_num=10000
 
 
+    target_num=max(magic_num,mean_value,median_value)
+    good_other_videos=[]
+    for i in other_videos:
+        if i['play']<=target_num:
+            continue
+        good_other_videos.append(i)
+    
+    for video in good_other_videos:
+        video['_id']=md5(video['bvid'])
+        video['find_by_other']=1
+        video['update_tm']=get_current_time()
 
-    table.update_one({'_id':i['_id']},{'$set':{'local_mp4':local_mp4,'four_wx_imgs':four_wx_imgs}})
-    logger.success(f'下载完成---->{safe_dir_name}')
+        table.update_one({'_id':video['_id']},{'$set':video},upsert=True)
+        
+    logger.success(f'{title}的作者 {mid} 挖掘完成  总共  {len(good_other_videos)}')
     return True
 if __name__ == '__main__':
 
     while 1:
+        # 暂时防止递归
+        mids=[]
+
         cursor=table.find()
+
         for i in cursor:
             _id=i['_id']
-
+            mid=i['mid']
+            if mid in mids:
+                continue
+            mids.append(mid)
             try:
-                title=i['title']
                 main_logic(i)
-
             except Exception as e:
                 continue
-
+        mids=[]
         logger.success(f'挖掘完成  ---->执行完成')
         time.sleep(1000)
 

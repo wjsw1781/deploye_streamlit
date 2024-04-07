@@ -104,9 +104,9 @@ async def bili_get_up_all_videos(she, end_pn=10):
             videos = await she.get_videos(0, pn, 30)
         except Exception as e:
             videos = []
-            logger.error(f"{pn} /{len(init)} {e} -----> 页获取失败 直接记录了")
-            time.sleep(10)
             init.append(pn)
+            logger.error(f"{pn} 进度 {index}/{len(init)} {e} -----> 页获取失败 直接记录了")
+            time.sleep(10)
             cur_try+=1
             if cur_try>max_try:
                 break
