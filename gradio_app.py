@@ -201,6 +201,11 @@ with gr.Blocks(fill_height=True,) as demo:
         @search_bvids_df.select(inputs=[search_bvids_df], outputs= [pre_one_item,current_item])
         def when_select(search_bvids,evt: gr.SelectData):
             current_item=search_bvids.iloc[evt.index[0]].to_dict()
+            if "mid" in current_item and len(str(current_item['mid']))>5:
+                mid=current_item['mid']
+            else:
+                mid=3493083962411195
+
             show_item={
                     "_id":md5(current_item['bvid']),
                     "id":current_item['id'],
@@ -234,6 +239,11 @@ with gr.Blocks(fill_height=True,) as demo:
         @have_in_db.select(inputs=[have_in_db], outputs= [pre_one_item,current_item,shuiyin_positon,img1,img2,img3,img4])
         def when_select(have_in_db,evt: gr.SelectData):
             current_item=have_in_db.iloc[evt.index[0]].to_dict()
+            if "mid" in current_item and len(str(current_item['mid']))>5:
+                mid=current_item['mid']
+            else:
+                mid=3493083962411195
+
             shuiyin_positon_rate=current_item.get('shuiyin_positon_rate',0)
             four_wx_imgs=current_item.get('four_wx_imgs',[])
             if not(shuiyin_positon_rate):
@@ -255,6 +265,7 @@ with gr.Blocks(fill_height=True,) as demo:
                     "play":current_item['play'],
                     "duration":current_item['duration'],
                     
+                    "mid":mid,
                     "four_wx_imgs":four_wx_imgs,
                     "shuiyin_positon_rate":shuiyin_positon_rate,
                     **current_item,

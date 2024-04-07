@@ -77,21 +77,26 @@ async def download_url(url: str, out: str, info: str):
 
                 process += len(chunk)
                 f.write(chunk)
+                rate=process/int(length)*100
+                print("\r"+"▇"*int(rate/10)+" "+str(rate)+"%", end="")
 
 
 def download_url_big(url: str, out: str, info: str):
     # 下载函数
-    with requests.get(url, stream=True, headers=HEADERS) as resp:
+    with requests.get(url, stream=True, headers=HEADERS,timeout=10) as resp:
         resp.raise_for_status()
         length = resp.headers.get('content-length')
         with open(out, 'wb') as f:
             process = 0
-            for chunk in resp.iter_content(chunk_size=1024):
+            for chunk in resp.iter_content(chunk_size=512*4):
                 if not chunk:
                     break
                 process += len(chunk)
                 f.write(chunk)
+                rate=process/int(length)*100
+                print("\r"+"▇"*int(rate/10)+" "+str(rate)+"%", end="")
 
+    return True
 # 获取所有视频
 async def bili_get_up_all_videos(she, end_pn=10):
     init = list(range(1, end_pn + 1))
@@ -117,7 +122,7 @@ async def bili_get_up_all_videos(she, end_pn=10):
         logger.debug(f"{pn} /{len(init)}  进度 {index}/{len(init)}-----> {len(all_videos)}   获取陈工")
         time.sleep(5)
     return all_videos
-
+import subprocess
 
 # 获取视频播放链接--->提取音频
 async def download_video_best(bvid, aid, local_filename):
@@ -128,16 +133,23 @@ async def download_video_best(bvid, aid, local_filename):
     if detecter.check_flv_stream() == True:
         flv_name = local_filename + ".flv"
         await download_url(streams[0].url, flv_name, "FLV 音视频流")
-        os.system(f'{FFMPEG_PATH} -i {flv_name} {local_filename}')
+        # os.system(f'{FFMPEG_PATH} -i {flv_name} {local_filename}')
+        subprocess.run(f'{FFMPEG_PATH} -i {flv_name} {local_filename}',stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
         os.remove(flv_name)
 
     else:
         video_temp = local_filename + "video_temp.m4s"
         audio_temp = local_filename + "audio_temp.m4s"
-        await download_url(streams[0].url, video_temp, "视频流")
-        await download_url(streams[1].url, audio_temp, "音频流")
-
-        os.system(f'{FFMPEG_PATH} -i {video_temp} -i {audio_temp} -vcodec copy  -acodec copy {local_filename} -y')
+        try:
+            download_url_big(streams[0].url, video_temp, "视频流")
+            download_url_big(streams[0].url, audio_temp, "音频流")
+            # await download_url(streams[0].url, video_temp, "音频流")
+            # await download_url(streams[1].url, audio_temp, "音频流")
+        except Exception as e:
+            logger.error(f"视频流|音频流下载失败 {e}")
+            return False
+        subprocess.run(f'{FFMPEG_PATH} -i {video_temp} -i {audio_temp} -vcodec copy  -acodec copy {local_filename} -y',stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+        # os.system(f'{FFMPEG_PATH} -i {video_temp} -i {audio_temp} -vcodec copy  -acodec copy {local_filename} -y')
         os.remove(audio_temp)
         os.remove(video_temp)
 

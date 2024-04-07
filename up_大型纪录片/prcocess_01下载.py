@@ -53,16 +53,14 @@ def main_logic(i):
     os.makedirs(os.path.dirname(local_mp4),exist_ok=True)
 
     if not os.path.exists(local_mp4):
-        download_video_sync(bvid,aid,local_mp4)
+        flag=download_video_sync(bvid,aid,local_mp4)
+        time.sleep(10)
     if four_wx_imgs==[]:
         four_imgs=extract_four_frames(local_mp4)
         for fram_local_path in four_imgs:
             data=wx_gzh._upload_local_media_to_wx_https(fram_local_path)
             url=data[1]
             four_wx_imgs.append(url)
-
-
-
 
     table.update_one({'_id':i['_id']},{'$set':{'local_mp4':local_mp4,'four_wx_imgs':four_wx_imgs}})
     logger.success(f'下载完成---->{safe_dir_name}')
@@ -90,6 +88,7 @@ if __name__ == '__main__':
             
             try:
                 title=i['title']+"\n"
+                logger.info(title)
 
                 main_logic(i)
 
@@ -98,7 +97,7 @@ if __name__ == '__main__':
             except Exception as e:
                 longzhu_pipline_obj.change_stage_step_error(current_logic,str(e))
 
-                logger.error(f'龙珠处理流程---->{i["_id"]}出错---->{e}')
+                logger.error(f'处理流程---->{title}出错---->{e}')
                 continue
 
             table.update_one({'_id':i['_id']},{'$set':{pipeline_filed:longzhu_pipline_obj.output_pipeline()}})
