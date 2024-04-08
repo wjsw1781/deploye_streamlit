@@ -36,6 +36,15 @@ import gradio as gr
 from pymongo import MongoClient
 from utils.utils import *
 import functools
+
+
+# 图片展示
+from PIL import Image
+
+from PIL import Image, ImageDraw
+
+import functools
+
 client = MongoClient(host='139.196.158.152', port=27017, username='root', password='1213wzwz', authSource='admin')
 db = client.zhiqiang_hot
 
@@ -63,32 +72,17 @@ def get_pinyin(text):
 
 # 过滤掉df1中那些df2中已经存在的数据
 def filter_after_in(df1,df2,filed='bvid'):
-    # 两者都有的
     merged_df = pd.merge(df1, df2, on=filed, how='inner')
-
-    # 获取需要过滤掉的索引信息
     filter_indices = merged_df.index
-
-    # 过滤掉取反
     filtered_df_list_video = df1[~df1.index.isin(filter_indices)]
-
     return filtered_df_list_video
-
-
-# 图片展示
-from PIL import Image
-
-from PIL import Image, ImageDraw
-
-import functools
-
-
 
 @functools.lru_cache()
 def get_wx_img(url):
     response = requests.get(url)
     image = Image.open(io.BytesIO(response.content))
     return image
+
 
 def draw_line_on_image(url, slider_value_rate=0.5):
     if slider_value_rate=="":
@@ -107,6 +101,34 @@ def draw_line_on_image(url, slider_value_rate=0.5):
 
 with gr.Blocks(fill_height=True,) as demo:
 
+    with gr.Tab(label='新增话题'):
+        with gr.Row():
+            new_group=gr.Textbox(value='',placeholder='新增一个大的抽象分类(比如  大型记录片  美丽风景 预告片  治愈视频  讲道理)')
+            group_video_from=gr.Dropdown(choices=['很多up主', '几个固定up主'],label='这个话题的内容大都来自几个固定up主还是很多up')
+            new_group_sub_obj=gr.Textbox(value='',placeholder='选择一个子话题吧 不是必须的')
+            up_init=gr.Textbox(value='',placeholder='提供一个up主的uid吧 比如 498421499,1068765283')
+            submit_button=gr.Button(value='点击提交')
+            pass
+        with gr.Row():
+            topics_df=gr.Dataframe(pd.DataFrame([]),label="当前话题总表数据表",interactive=True,height=600)
+    
+        @submit_button.click(inputs=[new_group,group_video_from,new_group,up_init], outputs= [topics_df])
+        def when_click_submit(new_group,group_video_from,new_group_sub_obj,up_init):
+            table_name=get_pinyin(new_group)
+            _id=md5(table_name)
+            item={
+                'group':new_group,
+                'table_name':table_name,
+                'group_video_from':group_video_from,
+                'new_group_sub_obj':new_group_sub_obj,
+                'up_init':up_init,
+                'update_tm':get_current_time(),
+            }
+            db['topic'].update_one({'_id':_id},{'$set':item},upsert=True)
+            all_topics=list(db['topic'].find({}))
+            df_all_topics=pd.DataFrame(all_topics)
+            return df_all_topics
+
     with gr.Tab(label='大型纪录片的设计-一切从topic开始'):
         all_topic=list(db['topic'].find({}))
         topic_df=pd.DataFrame(all_topic)
@@ -116,8 +138,8 @@ with gr.Blocks(fill_height=True,) as demo:
             info=gr.Warning()
 
         with gr.Row():
-            group=gr.Dropdown(choices=topic_df['group'].to_list(),label='选择一个分组')
-            topic=gr.Dropdown(choices=topic_df[topic_df['group']==group.value]['topic'].to_list(),label='选择一个子组')
+            group=gr.Dropdown(choices=set(topic_df['group'].to_list()),label='选择一个分组')
+            group_info=gr.Json(label='选择一个子组')
             key_word=gr.Textbox(label='输入关键词',value='',placeholder='默认是group和subgroup的拼接')
             search_btn=gr.Button(value='搜索')
 
@@ -148,12 +170,12 @@ with gr.Blocks(fill_height=True,) as demo:
 
 
         # 意味着选择表  改动两个部分
-        @group.change(inputs=group, outputs= [topic,have_in_db])
+        @group.change(inputs=group, outputs= [group_info,have_in_db])
         def update_sub_group_topic(group):
-            sub_topic=topic_df[topic_df['group']==group]['topic'].to_list()
-            topic=gr.Dropdown(choices=sub_topic,label='选择一个子组')
-            table_name=get_pinyin(group)
+            table_obj=topic_df[topic_df['group'] == group].to_dict('records')[0]
 
+            # 加载这个表的所有内容  这里需要设计 如果真的要全部内容的话我前端肯定要基于他进行实现筛选功能的!!! 不然人工质检要类似
+            table_name=get_pinyin(group)
             all_table_item=[]
             for ii in range(100):
                 page_items=get_mongo_skip_page(table_name,ii)
@@ -161,15 +183,12 @@ with gr.Blocks(fill_height=True,) as demo:
                     break
                 all_table_item.extend(page_items)
             gr.Warning(f'加载到 {ii} 页内容 ') 
-            #那个group下的所有数据
             have_in_db_value_df=pd.DataFrame(all_table_item)
 
-            return [topic,have_in_db_value_df]
 
-        @topic.change(inputs=[group,topic], outputs= [key_word])
-        def update_key_word(group,topic):
-            key_word=f"{group}-{topic}"
-            return key_word
+            return [table_obj,have_in_db_value_df]
+
+
         
         @search_btn.click(inputs=[key_word,have_in_db], outputs= [search_html,search_bvids_df])
         def search_bvids_by_key_word(key_word,have_in_db):
@@ -185,7 +204,7 @@ with gr.Blocks(fill_height=True,) as demo:
                 filter_df=filter_after_in(df_list_video,have_in_db)
             return [search_html_value,filter_df]
         
-        @add_in_db.click(inputs=[group,topic,key_word,current_item],outputs=info)
+        @add_in_db.click(inputs=[group,group_info,key_word,current_item],outputs=info)
         def scrapy_bvids_by_search_html(group,topic,key_word,current_item):
             table_name=get_pinyin(group)
 
@@ -263,10 +282,6 @@ with gr.Blocks(fill_height=True,) as demo:
             db[table_name].update_many({'_id':_id},{'$set':{'step':999,}})
             return gr.Warning(f'{_id} 不能用了 已标记为 step 999 ') 
 
-
-    with gr.Tab(label='新增话题'):
-        pass
-    
     with gr.Tab(label='龙珠开始的设计|查看功能为主'):
         with gr.Row():
             show_or_change=gr.Radio(label='选择关键视图', choices=['查看数据表', '修改数据表', ])
@@ -337,17 +352,6 @@ with gr.Blocks(fill_height=True,) as demo:
 
     
 demo.launch(server_port=8888, share=True,server_name='0.0.0.0')
-
-
-
-
-
-
-
-
-
-
-
 
 
 
