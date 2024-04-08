@@ -48,23 +48,26 @@ import functools
 client = MongoClient(host='139.196.158.152', port=27017, username='root', password='1213wzwz', authSource='admin')
 db = client.zhiqiang_hot
 
-# 查看  修改 两个功能
-# 获取所有mongo的表名
-
-
 all_table_names=db.list_collection_names()
 page_size=10
 pipeline_filed='pipeline'
+pipeline_filed_order='pipeline_order'
 
 
 # @functools.lru_cache(maxsize=128)
 def get_mongo_skip_page(table_name,pagging):
     skip_page=pagging*page_size
-    # 添加order属性
     logger.success(f'未命中缓存{table_name}   {pagging}')
     datalist=list(db[table_name].find({}).skip(skip_page).limit(page_size).sort("update_tm", -1))
-    key_colums=["_id",'title','step','play']
-    return datalist
+
+    key_colums=[pipeline_filed_order,'title','step','play',"_id",]
+    mongo_df=pd.DataFrame(datalist)
+    existing_columns = [col for col in key_colums if col in mongo_df.columns]
+
+    reordered_cols = existing_columns + [col for col in mongo_df.columns if col not in key_colums]
+    new_df = mongo_df[reordered_cols]
+
+    return new_df
 
 def get_pinyin(text):
     from pypinyin import pinyin, Style
@@ -145,7 +148,6 @@ with gr.Blocks(fill_height=True,) as demo:
             steps=gr.CheckboxGroup(label='所有数据状态情况',choices=[])
             search_btn=gr.Button(value='搜索')
 
-
         with gr.Row(equal_height=True):
             search_html=gr.HTML("<div>网页预览占位符</div>",label='b站检索结果',)
             search_bvids_df=gr.Dataframe(label='检索到的bvid',height=700,scale=1)
@@ -174,7 +176,7 @@ with gr.Blocks(fill_height=True,) as demo:
 
         # 意味着选择表  改动两个部分
         @group.change(inputs=group, outputs= [group_info,have_in_db_df,steps])
-        def update_sub_group_topic(group):
+        def update_table_df(group):
             table_obj=topic_df[topic_df['group'] == group].to_dict('records')[0]
 
             # 加载这个表的所有内容  这里需要设计 如果真的要全部内容的话我前端肯定要基于他进行实现筛选功能的!!! 不然人工质检要类似
@@ -184,9 +186,11 @@ with gr.Blocks(fill_height=True,) as demo:
                 page_items=get_mongo_skip_page(table_name,ii)
                 if len(page_items)==0:
                     break
-                all_table_item.extend(page_items)
-            gr.Warning(f'加载到 {ii} 页内容 ') 
-            have_in_db_df=pd.DataFrame(all_table_item)
+                all_table_item.append(page_items)
+
+            have_in_db_df = pd.concat(all_table_item, ignore_index=True)
+
+            gr.Warning(f'加载到 {ii} 页内容 总共 {len(all_table_item)} 条 ') 
 
             all_pipline_stage=json.loads(have_in_db_df['pipeline'][0])
             all_choices=[]
@@ -214,20 +218,12 @@ with gr.Blocks(fill_height=True,) as demo:
                         return 1
                 return 0
             
-            # 选取特定df的行 然后高亮
-            def highlight_current_row(df):
-                new_df=df.copy()
-                # new_df.loc[new_df[color_column]==1]='backgroud-color: green'
-                # new_df.loc[new_df[color_column]==0]='color: gray'
-                new_df[['title']]='color: green'
-                return new_df
-            
+            #
             have_in_db_df['pipeline_order'] = have_in_db_df['pipeline'].apply(stage_is_running)
             have_in_db_df = have_in_db_df.sort_values(by='pipeline_order', ascending=False)
-            styled_df = have_in_db_df.style.apply(highlight_current_row, axis=None)
-            # styled_df = have_in_db_df.style.highlight_max(color = 'lightgreen', axis = 0)
-
-            return styled_df
+            how_many=len(have_in_db_df[have_in_db_df['pipeline_order']==1])
+            gr.Warning(f'当前有 条件 {all_name_show}  总共有 {how_many} 条数据正在处理中 ')
+            return have_in_db_df
 
         
         @search_btn.click(inputs=[key_word,have_in_db_df], outputs= [search_html,search_bvids_df])
@@ -343,8 +339,7 @@ with gr.Blocks(fill_height=True,) as demo:
             all_docs_num=db[table_choice].count_documents({})
             new_pagging=gr.Slider(minimum=0,maximum=all_docs_num//page_size,step=1,value=0,show_label=False,interactive=True)
 
-            data_list=get_mongo_skip_page(table_choice,0)
-            new_table_df=pd.DataFrame(data_list)
+            new_table_df=get_mongo_skip_page(table_choice,0)
 
             colnums=new_table_df.columns.to_list()
             nwe_df_col_names=gr.CheckboxGroup(choices=colnums,value=['_id', 'title', 'step'],show_label=False,interactive=True)
@@ -352,8 +347,7 @@ with gr.Blocks(fill_height=True,) as demo:
         
         @pagging.change(inputs=[table_choice,pagging], outputs= table_df)
         def update_table_df_by_pagging(table_choice,pagging):
-            data_list=get_mongo_skip_page(table_choice,pagging)
-            new_table_df=pd.DataFrame(data_list)
+            new_table_df=get_mongo_skip_page(table_choice,pagging)
             return new_table_df
         
 
