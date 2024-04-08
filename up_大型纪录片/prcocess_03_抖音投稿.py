@@ -52,7 +52,7 @@ def main_logic(i):
     if os.path.exists(f'{dir_name}/{_id}'):
         return True
     # 打开抖音投稿页面
-    title=os.path.basename(ok_mp4.replace('ok.mp4',''))
+    title=os.path.basename(ok_mp4.replace('ok.mp4','').replace('twice_confirm.mp4',""))
 
     workder_tab=chrome.new_tab(url)
     time.sleep(15)

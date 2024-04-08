@@ -53,7 +53,7 @@ def main_logic(i):
         return True
     # 打开抖音投稿页面
     title=os.path.basename(ok_mp4.replace('ok.mp4',''))
-
+    title='预告片_'+title
     workder_tab=chrome.new_tab(url)
     time.sleep(15)
     # 上传视频

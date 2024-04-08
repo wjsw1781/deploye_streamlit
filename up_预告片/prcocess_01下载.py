@@ -73,7 +73,12 @@ if __name__ == '__main__':
 
 
     while 1:
-        cursor=table.find()
+        try:
+            cursor=table.find()
+        except Exception as e:
+            logger.error(f'数据库连接失败---->{e}')
+            time.sleep(10)
+            continue
         for i in cursor:
             _id=i['_id']
             if pipeline_filed not in i:

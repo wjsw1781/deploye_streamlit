@@ -270,18 +270,19 @@ with gr.Blocks(fill_height=True,css=css) as demo:
                 shuiyin_positon=0.5
             else:
                 shuiyin_positon=shuiyin_positon/100
-
             img1=draw_line_on_image(current_item['four_wx_imgs'][0],shuiyin_positon)
             img2=draw_line_on_image(current_item['four_wx_imgs'][1],shuiyin_positon)
             img3=draw_line_on_image(current_item['four_wx_imgs'][2],shuiyin_positon)
             img4=draw_line_on_image(current_item['four_wx_imgs'][3],shuiyin_positon)
-            return [img1,img2,img3,img4]
+            return [img1,img2,img3,img4]        
         
-        @have_in_db_df.select(inputs=[have_in_db_df], outputs= [pre_one_item,current_item,shuiyin_positon,img1,img2,img3,img4])
+        @have_in_db_df.select(inputs=[have_in_db_df], outputs= [pre_one_item,current_item,shuiyin_positon,shijianzhou_part,img1,img2,img3,img4])
         def when_select(have_in_db,evt: gr.SelectData):
             current_item=have_in_db.iloc[evt.index[0]].to_dict()
 
             shuiyin_positon_rate=current_item.get('shuiyin_positon_rate',0)
+            shijianzhou_top_detele_length=current_item.get('shijianzhou_top_detele_length',0)
+
             four_wx_imgs=current_item.get('four_wx_imgs',[])
             if len(four_wx_imgs)<4:
                 four_wx_imgs=['https://inews.gtimg.com/om_bt/O8sKHb6DwiPSvE7M5rUedf2qS3LwgJv-Yaru6hCqU8scUAA/641']*4
@@ -296,27 +297,28 @@ with gr.Blocks(fill_height=True,css=css) as demo:
 
             new_shuiyin_positon=gr.Slider(interactive=True,label='水印区域',minimum=0.0,maximum=100.0,step=1.0,value=shuiyin_positon_rate*100)
 
+            shijianzhou_part=gr.Slider(interactive=True,label='时间轴区域',minimum=0.0,maximum=100.0,step=1.0,value=shijianzhou_top_detele_length)
 
             img1=draw_line_on_image(four_wx_imgs[0],shuiyin_positon_rate)
             img2=draw_line_on_image(four_wx_imgs[1],shuiyin_positon_rate)
             img3=draw_line_on_image(four_wx_imgs[2],shuiyin_positon_rate)
             img4=draw_line_on_image(four_wx_imgs[3],shuiyin_positon_rate)
-            return [pre_one_item_value,current_item,new_shuiyin_positon,img1,img2,img3,img4]
+            return [pre_one_item_value,current_item,new_shuiyin_positon,shijianzhou_part,img1,img2,img3,img4]
 
-        @ok_btn.click(inputs=[shuiyin_positon,current_item,group], outputs=info)
-        def when_click_ok_btn(shuiyin_positon,current_item,group):
+        @ok_btn.click(inputs=[shuiyin_positon,shijianzhou_part,current_item,group], outputs=info)
+        def when_click_ok_btn(shuiyin_positon,shijianzhou_part,current_item,group):
             shuiyin_positon_rate=shuiyin_positon/100
             author=current_item['author']
             table_name=get_pinyin(group)
-            db[table_name].update_many({'author':author},{'$set':{'shuiyin_positon_rate':shuiyin_positon_rate,}})
-            return gr.Warning(f'{author} 的所有稿件已标注水印位置  {shuiyin_positon_rate} ') 
+            db[table_name].update_many({'author':author},{'$set':{'shuiyin_positon_rate':shuiyin_positon_rate,'shijianzhou_part':shijianzhou_part}})
+            return gr.Warning(f'{author} 的所有稿件已标注水印位置  {shuiyin_positon_rate}  时间轴 {shijianzhou_part} ') 
 
-        @one_ok.click(inputs=[shuiyin_positon,current_item,group],)
-        def when_click_err_btn(shuiyin_positon,current_item,group):
+        @one_ok.click(inputs=[shuiyin_positon,shijianzhou_part,current_item,group],)
+        def when_click_err_btn(shuiyin_positon,shijianzhou_part,current_item,group):
             table_name=get_pinyin(group)
             shuiyin_positon_rate=shuiyin_positon/100
             _id=current_item['_id']
-            db[table_name].update_one({'_id':_id},{'$set':{'shuiyin_positon_rate':shuiyin_positon_rate,}})
+            db[table_name].update_one({'_id':_id},{'$set':{'shuiyin_positon_rate':shuiyin_positon_rate,'shijianzhou_part':shijianzhou_part}})
             return gr.Warning(f'这个视频因为和原有的调整冲突 所以只调整一下 {_id}  {shuiyin_positon_rate} ') 
 
         @error_btn.click(inputs=[current_item,group], outputs=info)

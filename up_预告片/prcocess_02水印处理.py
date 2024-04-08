@@ -50,7 +50,7 @@ def main_logic(i):
         raise ValueError(f'参数不够 前面有阶段应该是人工那边没进行时间轴水印标注')
     
     ok_mp4=os.path.abspath(local_mp4+"ok.mp4")
-    logger.info(f' {ok_mp4}  ---->即将执行')
+    logger.info(f' {ok_mp4}  ---->即将执行 水印移除操作')
     ok_mp4_twice_confirm=ok_mp4+"twice_confirm.mp4"
 
     #两次确认 因为那个工具失败了也会产生视频 
@@ -73,9 +73,11 @@ if __name__ == '__main__':
         for i in cursor:
             _id=i['_id']
 
-
-            longzhu_pipline_obj=ther_piplie.restore_pipeline(i[pipeline_filed])
-            can_run_flag=longzhu_pipline_obj.can_run_stage_func(current_logic)
+            try:
+                longzhu_pipline_obj=ther_piplie.restore_pipeline(i[pipeline_filed])
+                can_run_flag=longzhu_pipline_obj.can_run_stage_func(current_logic)
+            except Exception:
+                continue
 
             if not can_run_flag:
                 continue
