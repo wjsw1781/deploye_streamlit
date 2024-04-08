@@ -46,8 +46,9 @@ def main_logic(i):
 
     local_mp4=i.get('local_mp4',None)
     shuiyin_positon_rate=i.get('shuiyin_positon_rate',None)
-    if local_mp4 is None or shuiyin_positon_rate is None:
-        raise ValueError(f'参数不够 前面有阶段应该是人工那边没进行时间轴水印标注')
+    shijianzhou_part=i.get('shijianzhou_part',None)
+    if local_mp4 is None or shuiyin_positon_rate is None or shijianzhou_part is None:
+        raise ValueError(f'参数不够 shuiyin_positon_rate {shuiyin_positon_rate}  shijianzhou_part  {shijianzhou_part} 前面有阶段应该是人工那边没进行时间轴水印标注')
     
     ok_mp4=os.path.abspath(local_mp4+"ok.mp4")
     logger.info(f' {ok_mp4}  ---->即将执行 水印移除操作')

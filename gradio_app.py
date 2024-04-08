@@ -281,7 +281,7 @@ with gr.Blocks(fill_height=True,css=css) as demo:
             current_item=have_in_db.iloc[evt.index[0]].to_dict()
 
             shuiyin_positon_rate=current_item.get('shuiyin_positon_rate',0)
-            shijianzhou_top_detele_length=current_item.get('shijianzhou_top_detele_length',0)
+            shijianzhou_part=current_item.get('shijianzhou_part',0)
 
             four_wx_imgs=current_item.get('four_wx_imgs',[])
             if len(four_wx_imgs)<4:
@@ -297,7 +297,7 @@ with gr.Blocks(fill_height=True,css=css) as demo:
 
             new_shuiyin_positon=gr.Slider(interactive=True,label='水印区域',minimum=0.0,maximum=100.0,step=1.0,value=shuiyin_positon_rate*100)
 
-            shijianzhou_part=gr.Slider(interactive=True,label='时间轴区域',minimum=0.0,maximum=100.0,step=1.0,value=shijianzhou_top_detele_length)
+            shijianzhou_part=gr.Slider(interactive=True,label='时间轴区域',minimum=0.0,maximum=100.0,step=1.0,value=shijianzhou_part)
 
             img1=draw_line_on_image(four_wx_imgs[0],shuiyin_positon_rate)
             img2=draw_line_on_image(four_wx_imgs[1],shuiyin_positon_rate)
