@@ -192,12 +192,13 @@ with gr.Blocks(fill_height=True,css=css) as demo:
 
             gr.Warning(f'加载到 {ii} 页内容 总共 {len(have_in_db_df)} 条 ') 
             
-
-            all_pipline_stage=json.loads(have_in_db_df['pipeline'][len(have_in_db_df['pipeline'])-1])
             all_choices=[]
-            for ii in all_pipline_stage:
-                for step_one in ['ok','running','error']:
-                    all_choices.append(f'{ii["name"]}|{step_one}')
+            if 'pipeline' in have_in_db_df:
+                all_pipline_stage=json.loads(have_in_db_df['pipeline'][len(have_in_db_df['pipeline'])-1])
+                for ii in all_pipline_stage:
+                    for step_one in ['ok','running','error']:
+                        all_choices.append(f'{ii["name"]}|{step_one}')
+                        
             all_choices_box=gr.CheckboxGroup(label='只显示指定数据状态情况',choices=all_choices,interactive=True)
 
             return [table_obj,have_in_db_df,all_choices_box]
