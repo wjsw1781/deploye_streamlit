@@ -63,6 +63,7 @@ def get_mongo_skip_page(table_name,pagging):
     # 添加order属性
     logger.success(f'未命中缓存{table_name}   {pagging}')
     datalist=list(db[table_name].find({}).skip(skip_page).limit(page_size).sort("update_tm", -1))
+    key_colums=["_id",'title','step','play']
     return datalist
 
 def get_pinyin(text):
@@ -146,14 +147,14 @@ with gr.Blocks(fill_height=True,) as demo:
 
 
         with gr.Row(equal_height=True):
-            search_html=gr.HTML("<div网页占位符</div>",label='b站检索结果',)
+            search_html=gr.HTML("<div>网页预览占位符</div>",label='b站检索结果',)
             search_bvids_df=gr.Dataframe(label='检索到的bvid',height=700,scale=1)
             with gr.Column():
                 current_item=gr.JSON(value={},label='一个json表示当前选中的条目',scale=1)
                 add_in_db=gr.Button(value='入库',elem_id='add_in_db')
 
         with gr.Row():
-            pre_one_item=gr.HTML("",label='预览一个后台请求到视频')
+            pre_one_item=gr.HTML("<div>网页预览占位符</div>",label='预览一个后台请求到视频')
 
         with gr.Row():
             have_in_db_df=gr.Dataframe(label='当前已入库的数据',height=1000)
@@ -196,7 +197,7 @@ with gr.Blocks(fill_height=True,) as demo:
 
             return [table_obj,have_in_db_df,all_choices_box]
         
-        @steps.input(inputs=[steps,have_in_db_df], outputs= [have_in_db_df])
+        @steps.input(inputs=[steps,have_in_db_df], outputs= have_in_db_df)
         def sort_by_steps(steps,have_in_db_df):
             # 把用户选择的排序到前面         可以标红处理一下 反正就是要给点ui反应
             all_name_show=[{item.split('|')[0]: item.split('|')[1]  } for item in steps]
@@ -209,15 +210,24 @@ with gr.Blocks(fill_height=True,) as demo:
                 for ii in all_name_show:
                     k =list(ii.items())[0][0]
                     v =list(ii.items())[0][1]
-                    if the_stage[k]==v:
+                    if k in the_stage and the_stage[k]==v:
                         return 1
                 return 0
-            def highlight_current_row
+            
+            # 选取特定df的行 然后高亮
+            def highlight_current_row(df):
+                new_df=df.copy()
+                # new_df.loc[new_df[color_column]==1]='backgroud-color: green'
+                # new_df.loc[new_df[color_column]==0]='color: gray'
+                new_df[['title']]='color: green'
+                return new_df
+            
             have_in_db_df['pipeline_order'] = have_in_db_df['pipeline'].apply(stage_is_running)
             have_in_db_df = have_in_db_df.sort_values(by='pipeline_order', ascending=False)
-            styled_df = have_in_db_df.style.apply(highlight_current_row, axis=1)
+            styled_df = have_in_db_df.style.apply(highlight_current_row, axis=None)
+            # styled_df = have_in_db_df.style.highlight_max(color = 'lightgreen', axis = 0)
 
-            return have_in_db_df
+            return styled_df
 
         
         @search_btn.click(inputs=[key_word,have_in_db_df], outputs= [search_html,search_bvids_df])
@@ -279,8 +289,6 @@ with gr.Blocks(fill_height=True,) as demo:
 
             bvid=current_item['bvid']
 
-
-         
             if 'step' in current_item and current_item['step']==999:
                 gr.Warning('这个已经被标记不能使用了  水印太大或者其他!!!')
 
