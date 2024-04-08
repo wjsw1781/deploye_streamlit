@@ -83,8 +83,8 @@ if __name__ == '__main__':
             longzhu_pipline_obj=ther_piplie.restore_pipeline(i[pipeline_filed])
             can_run_flag=longzhu_pipline_obj.can_run_stage_func(current_logic)
 
-            if not can_run_flag:
-                continue
+            # if not can_run_flag:
+            #     continue
             
             try:
                 title=i['title']+"\n"
