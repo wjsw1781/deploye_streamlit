@@ -21,21 +21,16 @@ class pipeline:
     def __init__(self,name="空流水线"):
         self.name=name
         self.pipeline = []
+    
+    @classmethod
+    def parse_stage_step(cls, **data):
+        return cls(**data)
+    
 
-    def gregister_pipline(self):
-        _id=md5(self.name)
-        item={
-            'name':self.name,
-            'pipeline':self.output_pipeline(),
-        }
-        
     def add_stage(self, stage):
         self.pipeline.append(stage)
         if len(self.pipeline)==1:
             self.pipeline[0].step = 'ok'
-        self.gregister_pipline()
-
-
     # 修改状态
     def change_stage_step_ok(self,stage:Stage):
         for index,one_stage in enumerate(self.pipeline):
@@ -58,8 +53,7 @@ class pipeline:
                 one_stage.step ='error'
                 one_stage.error =error_info
 
-                
-
+        
     def restore_pipeline(self,data):
         self.pipeline=[]
         for stage in json.loads(data):

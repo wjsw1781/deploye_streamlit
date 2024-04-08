@@ -139,12 +139,14 @@ with gr.Blocks(fill_height=True,) as demo:
 
         with gr.Row():
             group=gr.Dropdown(choices=set(topic_df['group'].to_list()),label='选择一个分组')
-            group_info=gr.Json(label='选择一个子组')
-            key_word=gr.Textbox(label='输入关键词',value='',placeholder='默认是group和subgroup的拼接')
+            group_info=gr.Json(label='当前表格的元数据信息')
+            key_word=gr.Textbox(label='输入关键词',value='',placeholder='通过关键词搜索新增条目')
+            steps=gr.CheckboxGroup(label='所有数据状态情况',choices=[])
             search_btn=gr.Button(value='搜索')
 
+
         with gr.Row(equal_height=True):
-            search_html=gr.HTML("",label='b站检索结果',)
+            search_html=gr.HTML("<div网页占位符</div>",label='b站检索结果',)
             search_bvids_df=gr.Dataframe(label='检索到的bvid',height=700,scale=1)
             with gr.Column():
                 current_item=gr.JSON(value={},label='一个json表示当前选中的条目',scale=1)
@@ -154,7 +156,7 @@ with gr.Blocks(fill_height=True,) as demo:
             pre_one_item=gr.HTML("",label='预览一个后台请求到视频')
 
         with gr.Row():
-            have_in_db=gr.Dataframe(label='当前已入库的数据',height=1000)
+            have_in_db_df=gr.Dataframe(label='当前已入库的数据',height=1000)
             with gr.Column():
                 shuiyin_positon=gr.Slider(interactive=True,label='水印区域',minimum=0.0,maximum=100.0,step=1.0,value=0)
                 shijianzhou_part=gr.Slider(interactive=True,label='时间轴区域',minimum=0.0,maximum=100.0,step=1.0,value=0)
@@ -170,7 +172,7 @@ with gr.Blocks(fill_height=True,) as demo:
 
 
         # 意味着选择表  改动两个部分
-        @group.change(inputs=group, outputs= [group_info,have_in_db])
+        @group.change(inputs=group, outputs= [group_info,have_in_db_df,steps])
         def update_sub_group_topic(group):
             table_obj=topic_df[topic_df['group'] == group].to_dict('records')[0]
 
@@ -183,14 +185,39 @@ with gr.Blocks(fill_height=True,) as demo:
                     break
                 all_table_item.extend(page_items)
             gr.Warning(f'加载到 {ii} 页内容 ') 
-            have_in_db_value_df=pd.DataFrame(all_table_item)
+            have_in_db_df=pd.DataFrame(all_table_item)
 
+            all_pipline_stage=json.loads(have_in_db_df['pipeline'][0])
+            all_choices=[]
+            for ii in all_pipline_stage:
+                for step_one in ['ok','running','error']:
+                    all_choices.append(f'{ii["name"]}|{step_one}')
+            all_choices_box=gr.CheckboxGroup(label='只显示指定数据状态情况',choices=all_choices,interactive=True)
 
-            return [table_obj,have_in_db_value_df]
+            return [table_obj,have_in_db_df,all_choices_box]
+        
+        @steps.input(inputs=[steps,have_in_db_df], outputs= [have_in_db_df])
+        def sort_by_steps(steps,have_in_db_df):
+            # 把用户选择的排序到前面         可以标红处理一下 反正就是要给点ui反应
+            all_name_show=[{item.split('|')[0]: item.split('|')[1]  } for item in steps]
 
+            def stage_is_running(item):
+                pipeline_obj=json.loads(item)
+                the_stage={}
+                for ii in pipeline_obj:
+                    the_stage[ii['name']]=ii['step']
+                for ii in all_name_show:
+                    k =list(ii.items())[0][0]
+                    v =list(ii.items())[0][1]
+                    if the_stage[k]==v:
+                        return 1
+                return 0
+            have_in_db_df['pipeline_order'] = have_in_db_df['pipeline'].apply(stage_is_running)
+            have_in_db_df = have_in_db_df.sort_values(by='pipeline_order', ascending=False)
+            return have_in_db_df
 
         
-        @search_btn.click(inputs=[key_word,have_in_db], outputs= [search_html,search_bvids_df])
+        @search_btn.click(inputs=[key_word,have_in_db_df], outputs= [search_html,search_bvids_df])
         def search_bvids_by_key_word(key_word,have_in_db):
             url=f'https://search.bilibili.com/all?keyword={key_word}&from_source=webtop_search&spm_id_from=333.1007&search_source=5'
             search_html_value = f'<iframe src={url} width="100%" height="700px" frameborder="0" allow="autoplay"></iframe>'
@@ -238,7 +265,7 @@ with gr.Blocks(fill_height=True,) as demo:
             img4=draw_line_on_image(current_item['four_wx_imgs'][3],shuiyin_positon)
             return [img1,img2,img3,img4]
         
-        @have_in_db.select(inputs=[have_in_db], outputs= [pre_one_item,current_item,shuiyin_positon,img1,img2,img3,img4])
+        @have_in_db_df.select(inputs=[have_in_db_df], outputs= [pre_one_item,current_item,shuiyin_positon,img1,img2,img3,img4])
         def when_select(have_in_db,evt: gr.SelectData):
             current_item=have_in_db.iloc[evt.index[0]].to_dict()
 
