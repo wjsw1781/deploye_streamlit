@@ -72,10 +72,7 @@ if __name__ == '__main__':
         cursor=table.find()
         for i in cursor:
             _id=i['_id']
-            if pipeline_filed not in i:
-                init_one(_id)
-                time.sleep(10)
-                continue
+
 
             longzhu_pipline_obj=ther_piplie.restore_pipeline(i[pipeline_filed])
             can_run_flag=longzhu_pipline_obj.can_run_stage_func(current_logic)

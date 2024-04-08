@@ -72,8 +72,8 @@ def crop_video_top_ratio(video_path, output_path, crop_height_ratio):
         output_path,
         '-y'
     ]
-    subprocess_call(cmd)
-    # subprocess_call_python(cmd)
+    # subprocess_call(cmd)
+    subprocess.run(cmd, shell=True,stdout=subprocess.PIPE, stderr=subprocess.PIPE,)
 
     return True
 

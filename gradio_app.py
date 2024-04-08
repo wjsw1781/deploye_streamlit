@@ -190,7 +190,7 @@ with gr.Blocks(fill_height=True,css=css) as demo:
 
             have_in_db_df = pd.concat(all_table_item, ignore_index=True)
 
-            gr.Warning(f'加载到 {ii} 页内容 总共 {len(all_table_item)} 条 ') 
+            gr.Warning(f'加载到 {ii} 页内容 总共 {len(have_in_db_df)} 条 ') 
             
 
             all_pipline_stage=json.loads(have_in_db_df['pipeline'][len(have_in_db_df['pipeline'])-1])
@@ -228,18 +228,18 @@ with gr.Blocks(fill_height=True,css=css) as demo:
 
         
         @search_btn.click(inputs=[group,key_word,have_in_db_df], outputs= [search_html,search_bvids_df])
-        def search_bvids_by_key_word(group,key_word,have_in_db):
+        def search_bvids_by_key_word(group,key_word,have_in_db_df):
             key_word=group+key_word
             url=f'https://search.bilibili.com/all?keyword={key_word}&from_source=webtop_search&spm_id_from=333.1007&search_source=5'
             search_html_value = f'<iframe src={url} width="100%" height="700px" frameborder="0" allow="autoplay"></iframe>'
 
             list_video=search_topic_by_kw_sync(key_word)
             df_list_video=pd.DataFrame(list_video)
-            if len(have_in_db)==0 or len(df_list_video)==0:
+            if len(have_in_db_df)<5 or len(df_list_video)==5:
 
                 filter_df=df_list_video
             else:
-                filter_df=filter_after_in(df_list_video,have_in_db)
+                filter_df=filter_after_in(df_list_video,have_in_db_df)
             return [search_html_value,filter_df]
         
         @add_in_db.click(inputs=[group,key_word,current_item],outputs=info)

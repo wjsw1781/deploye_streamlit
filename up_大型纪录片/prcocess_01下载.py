@@ -47,12 +47,13 @@ def main_logic(i):
 
     four_wx_imgs=i.get('four_wx_imgs',[])
     safe_dir_name=get_safe_title(fix_title)
-    local_mp4=f"./assert/{safe_dir_name}_{_id}/{safe_dir_name}.mp4"
- 
+    local_mp4=os.path.abspath(f"./assert/{safe_dir_name}_{_id}/{safe_dir_name}.mp4")
+
 
     os.makedirs(os.path.dirname(local_mp4),exist_ok=True)
 
     if not os.path.exists(local_mp4):
+        logger.info(f'开始下载---->{local_mp4}')
         flag=download_video_sync(bvid,aid,local_mp4)
         time.sleep(10)
     if four_wx_imgs==[]:
@@ -77,8 +78,9 @@ if __name__ == '__main__':
             _id=i['_id']
             if pipeline_filed not in i:
                 init_one(_id)
-                time.sleep(3)
                 continue
+            # if _id!='7d25e82cc86ff46a4763b6d5c62af005':
+            #     continue
 
             longzhu_pipline_obj=ther_piplie.restore_pipeline(i[pipeline_filed])
             can_run_flag=longzhu_pipline_obj.can_run_stage_func(current_logic)

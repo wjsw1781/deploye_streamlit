@@ -42,6 +42,7 @@ def main_logic(i):
     aid=i['aid']
     mid=i['mid']
     title=i['title']
+    shuiyin_positon_rate=i.get('shuiyin_positon_rate',0.1)
 
     # 获取5页数据
     other_videos=bili_get_up_videos_sync(uid=mid,end_pn=3)
@@ -64,6 +65,7 @@ def main_logic(i):
     for video in good_other_videos:
         video['_id']=md5(video['bvid'])
         video['find_by_other']=1
+        video['shuiyin_positon_rate']=shuiyin_positon_rate
 
         table.update_one({'_id':video['_id']},{'$set':video},upsert=True)
         
@@ -79,13 +81,13 @@ if __name__ == '__main__':
 
         for i in cursor:
             time.sleep(10)
-            _id=i['_id']
-            if 'mid' not in i:
-                continue
+
             mid=i['mid']
+            
             if mid in mids:
                 continue
             mids.append(mid)
+            
             try:
                 main_logic(i)
             except Exception as e:

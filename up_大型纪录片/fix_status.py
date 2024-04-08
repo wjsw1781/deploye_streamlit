@@ -42,14 +42,20 @@ current_logic=Stage('移除水印和时间轴')
 cursor=table.find()
 for i in cursor:
     _id=i['_id']
-    if 'ok_mp4' not in i:
-        table.delete_one({'_id':_id})
-        continue
-    if i.get('have_up_douyin','')==111:
-        print(i['ok_mp4'])
-    else:
-        logger.error(f'{i["ok_mp4"]}---->没有执行完成')
-        table.delete_one({'_id':_id})
+    bvid=i['bvid']
+    aid=i['aid']
+    mid=get_up_by_bvid_sync(bvid,aid)
+    table.update_one({'_id':_id},{'$set':{'mid':mid}})
+    logger.success(f'{_id}---->mid:{mid}')
+
+    # if 'ok_mp4' not in i:
+    #     table.delete_one({'_id':_id})
+    #     continue
+    # if i.get('have_up_douyin','')==111:
+    #     print(i['ok_mp4'])
+    # else:
+    #     logger.error(f'{i["ok_mp4"]}---->没有执行完成')
+    #     table.delete_one({'_id':_id})
 
     # if 'ok_mp4' in i and len(i['ok_mp4'])>5:
     #     longzhu_pipline_obj=ther_piplie.restore_pipeline(i[pipeline_filed])

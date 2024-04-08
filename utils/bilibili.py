@@ -142,7 +142,7 @@ async def download_video_best(bvid, aid, local_filename):
         audio_temp = local_filename + "audio_temp.m4s"
         try:
             download_url_big(streams[0].url, video_temp, "视频流")
-            download_url_big(streams[0].url, audio_temp, "音频流")
+            download_url_big(streams[1].url, audio_temp, "音频流")
             # await download_url(streams[0].url, video_temp, "音频流")
             # await download_url(streams[1].url, audio_temp, "音频流")
         except Exception as e:
@@ -152,6 +152,12 @@ async def download_video_best(bvid, aid, local_filename):
         # os.system(f'{FFMPEG_PATH} -i {video_temp} -i {audio_temp} -vcodec copy  -acodec copy {local_filename} -y')
         os.remove(audio_temp)
         os.remove(video_temp)
+
+async def get_up_by_bvid(bvid, aid):
+    video_ele = video.Video(bvid=bvid, aid=aid, credential=credential)
+    mid = await video_ele.get_up_mid()
+    return mid
+
 
 # 裁剪 以及缩放
 def scale_and_crop_video(video_path, scaled_video_path, size_rate=1.2, watermark_text="永远热爱"):
@@ -249,6 +255,10 @@ def search_topic_by_kw_sync(key_word='大型纪录片-技师'):
     res = sync(search_topic_by_kw(key_word))
     list_obj_video=res['result']
     return list_obj_video
+
+def get_up_by_bvid_sync(bvid,aid):
+    res = sync(get_up_by_bvid(bvid,aid))
+    return res
 
 
 if __name__ == '__main__':
