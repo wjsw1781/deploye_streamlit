@@ -212,8 +212,11 @@ with gr.Blocks(fill_height=True,) as demo:
                     if the_stage[k]==v:
                         return 1
                 return 0
+            def highlight_current_row
             have_in_db_df['pipeline_order'] = have_in_db_df['pipeline'].apply(stage_is_running)
             have_in_db_df = have_in_db_df.sort_values(by='pipeline_order', ascending=False)
+            styled_df = have_in_db_df.style.apply(highlight_current_row, axis=1)
+
             return have_in_db_df
 
         
