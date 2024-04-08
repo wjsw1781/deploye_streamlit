@@ -48,11 +48,10 @@ def main_logic(i):
     ok_mp4=i.get('ok_mp4',None)
     if not(ok_mp4) :
         raise ValueError(f'参数不够 前面的阶段没把这个阶段环节所需要的数据准备好')
-    have_up_douyin=i.get('have_up_douyin',False)
-    if have_up_douyin==111:
-        logger.success(f'---->{title}  已经上传过了')
+    dir_name=os.path.dirname(ok_mp4)
+    if os.path.exists(f'{dir_name}/{_id}'):
         return True
-    
+    # 打开抖音投稿页面
     title=os.path.basename(ok_mp4.replace('ok.mp4',''))
 
     workder_tab=chrome.new_tab(url)
@@ -106,8 +105,10 @@ def main_logic(i):
 
     if not (flag2 and flag3 and flag4):
         raise ValueError(f"上传失败操作过程中失败了 flag2 {flag2} flag3 {flag3} flag4 {flag4}")
-    
-    table.update_one({'_id':_id},{'$set':{'have_up_douyin':111,}})
+
+    # 创建一个空文件表明已经上传过了
+    with open(f'{dir_name}/{_id}','w') as f:
+        f.write('')
 
     logger.success(f'---->{title}  完成')
 

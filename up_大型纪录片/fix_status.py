@@ -42,16 +42,25 @@ current_logic=Stage('移除水印和时间轴')
 cursor=table.find()
 for i in cursor:
     _id=i['_id']
-    if 'ok_mp4' in i and len(i['ok_mp4'])>5:
-        longzhu_pipline_obj=ther_piplie.restore_pipeline(i[pipeline_filed])
-
-        longzhu_pipline_obj.change_stage_step_ok(pre)
-        longzhu_pipline_obj.change_stage_step_ok(current_logic)
-
-        table.update_one({'_id':i['_id']},{'$set':{pipeline_filed:longzhu_pipline_obj.output_pipeline(),'have_up_douyin':111}})
-        logger.success(f'{_id}---->执行完成')
+    if 'ok_mp4' not in i:
+        table.delete_one({'_id':_id})
+        continue
+    if i.get('have_up_douyin','')==111:
+        print(i['ok_mp4'])
     else:
-        print('没有ok_mp4','mid' in i)
+        logger.error(f'{i["ok_mp4"]}---->没有执行完成')
+        table.delete_one({'_id':_id})
+
+    # if 'ok_mp4' in i and len(i['ok_mp4'])>5:
+    #     longzhu_pipline_obj=ther_piplie.restore_pipeline(i[pipeline_filed])
+
+    #     longzhu_pipline_obj.change_stage_step_ok(pre)
+    #     longzhu_pipline_obj.change_stage_step_ok(current_logic)
+
+    #     table.update_one({'_id':i['_id']},{'$set':{pipeline_filed:longzhu_pipline_obj.output_pipeline(),'have_up_douyin':111}})
+    #     logger.success(f'{_id}---->执行完成')
+    # else:
+        # print('没有ok_mp4','mid' in i)
 
 logger.success(f'{current_logic}---->执行完成')
 

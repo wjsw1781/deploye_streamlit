@@ -49,15 +49,16 @@ def main_logic(i):
     if local_mp4 is None or shuiyin_positon_rate is None:
         raise ValueError(f'参数不够 前面有阶段应该是人工那边没进行时间轴水印标注')
     
-    ok_mp4=local_mp4+"ok.mp4"
-    
+    ok_mp4=os.path.abspath(local_mp4+"ok.mp4")
+    logger.info(f' {ok_mp4}  ---->即将执行')
+    ok_mp4_twice_confirm=ok_mp4+"twice_confirm.mp4"
 
-    
-    crop_video_top_ratio(local_mp4,ok_mp4,shuiyin_positon_rate)
+    #两次确认 因为那个工具失败了也会产生视频 
+    if not os.path.exists(ok_mp4_twice_confirm):
+        crop_video_top_ratio(local_mp4,ok_mp4,shuiyin_positon_rate)
+        os.rename(ok_mp4,ok_mp4_twice_confirm)
 
-
-
-    table.update_one({'_id':i['_id']},{'$set':{'ok_mp4':ok_mp4}})
+    table.update_one({'_id':i['_id']},{'$set':{'ok_mp4':ok_mp4_twice_confirm}})
     logger.success(f'{current_logic}')
     return True
 if __name__ == '__main__':
