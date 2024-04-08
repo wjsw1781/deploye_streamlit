@@ -48,7 +48,7 @@ def measure_execution_time(func):
     return wrapper
 
 @measure_execution_time
-def crop_video_top_ratio(video_path, output_path, crop_height_ratio):
+def crop_video_top_ratio(video_path, output_path, crop_height_ratio,shijianzhou_part=0):
    
     # Get video dimensions
     clip = VideoFileClip(video_path)
@@ -65,6 +65,7 @@ def crop_video_top_ratio(video_path, output_path, crop_height_ratio):
     shuiyin_position=random.choice(['W-w-10:H-h-10','W-w-10:(H-h-10)/2','W-w-10:0',])
     cmd = [
         "ffmpeg",
+        "-ss", str(shijianzhou_part),  # 指定起始时间
         "-i", video_path,
         "-i", watermark_path,
         "-filter_complex",

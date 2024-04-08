@@ -56,7 +56,7 @@ def main_logic(i):
 
     #两次确认 因为那个工具失败了也会产生视频 
     if not os.path.exists(ok_mp4_twice_confirm):
-        crop_video_top_ratio(local_mp4,ok_mp4,shuiyin_positon_rate)
+        crop_video_top_ratio(local_mp4,ok_mp4,shuiyin_positon_rate,shijianzhou_part)
         os.rename(ok_mp4,ok_mp4_twice_confirm)
 
     table.update_one({'_id':i['_id']},{'$set':{'ok_mp4':ok_mp4_twice_confirm}})
