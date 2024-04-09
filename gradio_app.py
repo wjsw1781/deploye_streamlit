@@ -186,6 +186,7 @@ with gr.Blocks(fill_height=True,css=css) as demo:
                 page_items=get_mongo_skip_page(table_name,ii)
                 if len(page_items)==0:
                     break
+                
                 all_table_item.append(page_items)
 
             have_in_db_df = pd.concat(all_table_item, ignore_index=True)
