@@ -77,21 +77,20 @@ if __name__ == '__main__':
         # 暂时防止递归
         mids=[]
 
-        cursor=table.find()
+        try:
+            cursor=table.find()
+            for i in cursor:
+                mid=i['mid']
 
-        for i in cursor:
-
-            mid=i['mid']
+                if mid in mids:
+                    continue
+                mids.append(mid)
             
-            if mid in mids:
-                continue
-            mids.append(mid)
-            
-            try:
-                time.sleep(10)
                 main_logic(i)
-            except Exception as e:
-                continue
+
+        except Exception as e:
+            continue
+        
         mids=[]
         logger.success(f'挖掘完成  ---->执行完成')
         time.sleep(1000)
