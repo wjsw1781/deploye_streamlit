@@ -80,7 +80,6 @@ if __name__ == '__main__':
         cursor=table.find()
 
         for i in cursor:
-            time.sleep(10)
 
             mid=i['mid']
             
@@ -89,6 +88,7 @@ if __name__ == '__main__':
             mids.append(mid)
             
             try:
+                time.sleep(10)
                 main_logic(i)
             except Exception as e:
                 continue
