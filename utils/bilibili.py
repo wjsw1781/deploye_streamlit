@@ -209,16 +209,12 @@ def extract_four_frames(video_path):
     # Extract frames at the specified time points
     for i, time in enumerate(frame_times):
         # Set the frame to be extracted at the specified time point
-        frame = clip.get_frame(time)
-        
-        # Save the frame as an image file
-        image = Image.fromarray(frame)
-            
-        # Save the image as a JPEG file
         frame_path = os.path.join(frames_dir, f'frame_{i}.jpg')
-        image.save(frame_path)
+        if not os.path.exists(frame_path):
+            frame = clip.get_frame(time)
+            image = Image.fromarray(frame)
+            image.save(frame_path)
         all_img_path.append(frame_path)
-    # Close the video clip
     clip.close()
     
     return all_img_path
