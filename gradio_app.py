@@ -209,6 +209,8 @@ with gr.Blocks(fill_height=True,css=css) as demo:
             all_name_show=[{item.split('|')[0]: item.split('|')[1]  } for item in steps]
 
             def stage_is_running(item):
+                if 'pipeline' not  in item:
+                    return 0
                 pipeline_obj=json.loads(item)
                 the_stage={}
                 for ii in pipeline_obj:

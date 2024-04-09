@@ -51,7 +51,7 @@ def main_logic(i):
         raise ValueError(f'参数不够 shuiyin_positon_rate {shuiyin_positon_rate}  shijianzhou_part  {shijianzhou_part} 前面有阶段应该是人工那边没进行时间轴水印标注')
     
     ok_mp4=os.path.abspath(local_mp4+"ok.mp4")
-    logger.info(f' {ok_mp4}  ---->即将执行 水印移除操作')
+    logger.info(f' {ok_mp4}  ---->即将产生这个中间文件 但马上就会被重命名为twice_confirm 水印移除操作')
     ok_mp4_twice_confirm=ok_mp4+"twice_confirm.mp4"
 
     #两次确认 因为那个工具失败了也会产生视频 
