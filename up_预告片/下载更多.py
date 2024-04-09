@@ -44,8 +44,8 @@ def main_logic(i):
     title=i['title']
     shuiyin_positon_rate=i.get('shuiyin_positon_rate',0.1)
 
-    # 获取5页数据
-    other_videos=bili_get_up_videos_sync(uid=mid,end_pn=20)
+    # 获取5页数据  10页足够了
+    other_videos=bili_get_up_videos_sync(uid=mid,end_pn=10)
     # 计算平均数字播放量 还有中位数
     all_play=[]
     for j in other_videos:
@@ -89,6 +89,8 @@ if __name__ == '__main__':
                 main_logic(i)
 
         except Exception as e:
+            logger.error(f'{e}')
+            time.sleep(100)
             continue
         
         mids=[]

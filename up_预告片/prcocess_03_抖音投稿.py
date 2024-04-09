@@ -49,7 +49,9 @@ def main_logic(i):
     if not(ok_mp4) :
         raise ValueError(f'参数不够 前面的阶段没把这个阶段环节所需要的数据准备好')
     dir_name=os.path.dirname(ok_mp4)
-    if os.path.exists(f'{dir_name}/{_id}'):
+
+    flag_file=f'{dir_name}/{_id}{os.path.basename(__file__)}'
+    if os.path.exists(flag_file):
         return True
     # 打开抖音投稿页面
     title=os.path.basename(ok_mp4.replace('ok.mp4',''))
@@ -107,7 +109,7 @@ def main_logic(i):
         raise ValueError(f"上传失败操作过程中失败了 flag2 {flag2} flag3 {flag3} flag4 {flag4}")
 
     # 创建一个空文件表明已经上传过了
-    with open(f'{dir_name}/{_id}','w') as f:
+    with open(flag_file,'w') as f:
         f.write('')
 
     logger.success(f'---->{title}  完成')
