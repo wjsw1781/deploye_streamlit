@@ -193,12 +193,13 @@ with gr.Blocks(fill_height=True,css=css) as demo:
             gr.Warning(f'加载到 {ii} 页内容 总共 {len(have_in_db_df)} 条 ') 
             
             all_choices=[]
-            if 'pipeline' in have_in_db_df:
-                all_pipline_stage=json.loads(have_in_db_df['pipeline'][len(have_in_db_df['pipeline'])-1])
+            have_pipeline_df=have_in_db_df[~pd.isnull(have_in_db_df[pipeline_filed])][pipeline_filed]
+            if len(have_pipeline_df)>0:
+                all_pipline_stage=json.loads(have_pipeline_df[0])
                 for ii in all_pipline_stage:
                     for step_one in ['ok','running','error']:
                         all_choices.append(f'{ii["name"]}|{step_one}')
-                        
+                    
             all_choices_box=gr.CheckboxGroup(label='只显示指定数据状态情况',choices=all_choices,interactive=True)
 
             return [table_obj,have_in_db_df,all_choices_box]
@@ -223,7 +224,7 @@ with gr.Blocks(fill_height=True,css=css) as demo:
                 return 0
             
             #
-            have_in_db_df['pipeline_order'] = have_in_db_df['pipeline'].apply(stage_is_running)
+            have_in_db_df['pipeline_order'] = have_in_db_df[pipeline_filed].apply(stage_is_running)
             have_in_db_df = have_in_db_df.sort_values(by='pipeline_order', ascending=False)
             how_many=len(have_in_db_df[have_in_db_df['pipeline_order']==1])
             gr.Warning(f'当前有 条件 {all_name_show}  总共有 {how_many} 条数据正在处理中 ')
